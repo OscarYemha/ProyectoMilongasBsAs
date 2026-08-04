@@ -34,6 +34,10 @@
             DgvMilongas = new DataGridView();
             CmbOrden = new ComboBox();
             label1 = new Label();
+            CmbBarrio = new ComboBox();
+            label2 = new Label();
+            label3 = new Label();
+            CmbClase = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)DgvMilongas).BeginInit();
             SuspendLayout();
             // 
@@ -58,7 +62,7 @@
             // 
             // TxtBuscar
             // 
-            TxtBuscar.Location = new Point(58, 188);
+            TxtBuscar.Location = new Point(58, 127);
             TxtBuscar.Name = "TxtBuscar";
             TxtBuscar.Size = new Size(387, 23);
             TxtBuscar.TabIndex = 2;
@@ -67,15 +71,15 @@
             // DgvMilongas
             // 
             DgvMilongas.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            DgvMilongas.Location = new Point(58, 250);
+            DgvMilongas.Location = new Point(58, 376);
             DgvMilongas.Name = "DgvMilongas";
-            DgvMilongas.Size = new Size(387, 188);
+            DgvMilongas.Size = new Size(387, 211);
             DgvMilongas.TabIndex = 3;
             // 
             // CmbOrden
             // 
             CmbOrden.FormattingEnabled = true;
-            CmbOrden.Location = new Point(58, 144);
+            CmbOrden.Location = new Point(58, 190);
             CmbOrden.Name = "CmbOrden";
             CmbOrden.Size = new Size(387, 23);
             CmbOrden.TabIndex = 4;
@@ -84,17 +88,57 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(58, 126);
+            label1.Location = new Point(58, 172);
             label1.Name = "label1";
             label1.Size = new Size(74, 15);
             label1.TabIndex = 5;
             label1.Text = "Ordenar por:";
             // 
+            // CmbBarrio
+            // 
+            CmbBarrio.FormattingEnabled = true;
+            CmbBarrio.Location = new Point(58, 255);
+            CmbBarrio.Name = "CmbBarrio";
+            CmbBarrio.Size = new Size(387, 23);
+            CmbBarrio.TabIndex = 6;
+            CmbBarrio.SelectedIndexChanged += CmbBarrio_SelectedIndexChanged;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(58, 237);
+            label2.Name = "label2";
+            label2.Size = new Size(41, 15);
+            label2.TabIndex = 7;
+            label2.Text = "Barrio:";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(58, 298);
+            label3.Name = "label3";
+            label3.Size = new Size(35, 15);
+            label3.TabIndex = 8;
+            label3.Text = "Clase";
+            // 
+            // CmbClase
+            // 
+            CmbClase.FormattingEnabled = true;
+            CmbClase.Location = new Point(58, 316);
+            CmbClase.Name = "CmbClase";
+            CmbClase.Size = new Size(387, 23);
+            CmbClase.TabIndex = 9;
+            CmbClase.SelectedIndexChanged += CmbClase_SelectedIndexChanged;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(800, 634);
+            Controls.Add(CmbClase);
+            Controls.Add(label3);
+            Controls.Add(label2);
+            Controls.Add(CmbBarrio);
             Controls.Add(label1);
             Controls.Add(CmbOrden);
             Controls.Add(DgvMilongas);
@@ -116,5 +160,9 @@
         private DataGridView DgvMilongas;
         private ComboBox CmbOrden;
         private Label label1;
+        private ComboBox CmbBarrio;
+        private Label label2;
+        private Label label3;
+        private ComboBox CmbClase;
     }
 }

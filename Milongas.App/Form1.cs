@@ -1,6 +1,6 @@
+using Microsoft.Playwright;
 using Milongas.Extractor.Models;
 using Milongas.Extractor.Services;
-using Microsoft.Playwright;
 
 namespace Milongas.App;
 
@@ -20,6 +20,7 @@ public partial class Form1 : Form
     private List<Milonga> agenda = new();
 
     private bool actualizandoFechas;
+    private bool actualizandoFiltros;
     private bool agendaCargada;
 
     private const string Url =
@@ -40,8 +41,15 @@ public partial class Form1 : Form
 
         ConfigurarTabla();
         ConfigurarOrden();
+        ConfigurarClase();
 
-        FormClosed += Form1_FormClosed;
+        HabilitarControlesAgenda(false);
+
+        DgvMilongas.CellFormatting +=
+            DgvMilongas_CellFormatting;
+
+        FormClosed +=
+            Form1_FormClosed;
     }
 
     private async void BtnCargar_Click(
@@ -51,11 +59,9 @@ public partial class Form1 : Form
         filtroCancellationTokenSource?.Cancel();
 
         BtnCargar.Enabled = false;
-        CmbFecha.Enabled = false;
-        TxtBuscar.Enabled = false;
-        CmbOrden.Enabled = false;
-
         BtnCargar.Text = "Cargando...";
+
+        HabilitarControlesAgenda(false);
 
         try
         {
@@ -78,6 +84,8 @@ public partial class Form1 : Form
             }
 
             agendaCargada = true;
+
+            CargarBarrios();
 
             DateOnly? fechaSeleccionada =
                 CargarFechas();
@@ -109,12 +117,21 @@ public partial class Form1 : Form
         finally
         {
             BtnCargar.Enabled = true;
-            CmbFecha.Enabled = agendaCargada;
-            TxtBuscar.Enabled = agendaCargada;
-            CmbOrden.Enabled = agendaCargada;
-
             BtnCargar.Text = "Cargar agenda";
+
+            HabilitarControlesAgenda(
+                agendaCargada);
         }
+    }
+
+    private void HabilitarControlesAgenda(
+        bool habilitar)
+    {
+        CmbFecha.Enabled = habilitar;
+        TxtBuscar.Enabled = habilitar;
+        CmbOrden.Enabled = habilitar;
+        CmbBarrio.Enabled = habilitar;
+        CmbClase.Enabled = habilitar;
     }
 
     private DateOnly? CargarFechas()
@@ -127,14 +144,14 @@ public partial class Form1 : Form
                 agenda
                     .Select(milonga => milonga.Fecha)
                     .Distinct()
-                    .OrderBy(fechaItem => fechaItem)
+                    .OrderBy(fecha => fecha)
                     .ToList();
 
             CmbFecha.Items.Clear();
 
-            foreach (DateOnly fechaItem in fechas)
+            foreach (DateOnly fecha in fechas)
             {
-                CmbFecha.Items.Add(fechaItem);
+                CmbFecha.Items.Add(fecha);
             }
 
             if (CmbFecha.Items.Count == 0)
@@ -168,6 +185,54 @@ public partial class Form1 : Form
         }
     }
 
+    private void CargarBarrios()
+    {
+        actualizandoFiltros = true;
+
+        try
+        {
+            List<string> barrios =
+                agendaService.ObtenerBarrios(
+                    agenda);
+
+            CmbBarrio.Items.Clear();
+
+            CmbBarrio.Items.Add("Todos");
+
+            foreach (string barrio in barrios)
+            {
+                CmbBarrio.Items.Add(barrio);
+            }
+
+            CmbBarrio.SelectedIndex = 0;
+        }
+        finally
+        {
+            actualizandoFiltros = false;
+        }
+    }
+
+    private void ConfigurarClase()
+    {
+        CmbClase.Items.Clear();
+
+        CmbClase.Items.Add("Todas");
+        CmbClase.Items.Add("Con clase");
+        CmbClase.Items.Add("Sin clase");
+
+        CmbClase.SelectedIndex = 0;
+    }
+
+    private void ConfigurarOrden()
+    {
+        CmbOrden.Items.Clear();
+
+        CmbOrden.Items.Add("Horario");
+        CmbOrden.Items.Add("Distancia");
+
+        CmbOrden.SelectedIndex = 0;
+    }
+
     private async Task ProgramarActualizacionAsync(
         DateOnly fecha,
         string texto,
@@ -199,7 +264,7 @@ public partial class Form1 : Form
         }
         catch (OperationCanceledException)
         {
-            // Cancelar una búsqueda anterior es un comportamiento normal.
+            // Es normal cancelar una actualización anterior.
         }
     }
 
@@ -208,11 +273,19 @@ public partial class Form1 : Form
         string texto,
         CancellationToken cancellationToken)
     {
+        string? barrioSeleccionado =
+            ObtenerBarrioSeleccionado();
+
+        bool? tieneClase =
+            ObtenerFiltroClase();
+
         FiltroAgenda filtro = new()
         {
             Fecha = fecha,
             Texto = texto,
-            Cancelada = false
+            Barrio = barrioSeleccionado,
+            Cancelada = false,
+            TieneClase = tieneClase
         };
 
         List<Milonga> resultado =
@@ -222,7 +295,7 @@ public partial class Form1 : Form
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        // Primero mostramos la información que ya tenemos.
+        // Mostramos primero los datos básicos.
         ActualizarTabla(resultado);
 
         if (resultado.Count == 0)
@@ -267,7 +340,8 @@ public partial class Form1 : Form
             latitudOrigen,
             longitudOrigen);
 
-        if (CmbOrden.SelectedItem?.ToString() == "Distancia")
+        if (CmbOrden.SelectedItem?.ToString()
+            == "Distancia")
         {
             resultado =
                 distanciaService.OrdenarPorDistancia(
@@ -277,6 +351,37 @@ public partial class Form1 : Form
         cancellationToken.ThrowIfCancellationRequested();
 
         ActualizarTabla(resultado);
+    }
+
+    private string? ObtenerBarrioSeleccionado()
+    {
+        if (CmbBarrio.SelectedItem is not string barrio ||
+            barrio == "Todos")
+        {
+            return null;
+        }
+
+        return barrio;
+    }
+
+    private bool? ObtenerFiltroClase()
+    {
+        if (CmbClase.SelectedItem is not string clase)
+        {
+            return null;
+        }
+
+        if (clase == "Con clase")
+        {
+            return true;
+        }
+
+        if (clase == "Sin clase")
+        {
+            return false;
+        }
+
+        return null;
     }
 
     private void ActualizarTabla(
@@ -345,14 +450,25 @@ public partial class Form1 : Form
             });
     }
 
-    private void ConfigurarOrden()
+    private void DgvMilongas_CellFormatting(
+        object? sender,
+        DataGridViewCellFormattingEventArgs e)
     {
-        CmbOrden.Items.Clear();
+        DataGridViewColumn columna =
+            DgvMilongas.Columns[e.ColumnIndex];
 
-        CmbOrden.Items.Add("Horario");
-        CmbOrden.Items.Add("Distancia");
+        if (columna.DataPropertyName != "HorarioClase")
+        {
+            return;
+        }
 
-        CmbOrden.SelectedIndex = 0;
+        if (e.Value is null ||
+            string.IsNullOrWhiteSpace(
+                e.Value.ToString()))
+        {
+            e.Value = "Sin clase";
+            e.FormattingApplied = true;
+        }
     }
 
     private async void CmbFecha_SelectedIndexChanged(
@@ -376,8 +492,7 @@ public partial class Form1 : Form
         object sender,
         EventArgs e)
     {
-        if (actualizandoFechas ||
-            !agendaCargada ||
+        if (!agendaCargada ||
             CmbFecha.SelectedItem is not DateOnly fecha)
         {
             return;
@@ -390,6 +505,39 @@ public partial class Form1 : Form
     }
 
     private async void CmbOrden_SelectedIndexChanged(
+        object sender,
+        EventArgs e)
+    {
+        if (!agendaCargada ||
+            CmbFecha.SelectedItem is not DateOnly fecha)
+        {
+            return;
+        }
+
+        await ProgramarActualizacionAsync(
+            fecha,
+            TxtBuscar.Text,
+            aplicarDemora: false);
+    }
+
+    private async void CmbBarrio_SelectedIndexChanged(
+        object sender,
+        EventArgs e)
+    {
+        if (actualizandoFiltros ||
+            !agendaCargada ||
+            CmbFecha.SelectedItem is not DateOnly fecha)
+        {
+            return;
+        }
+
+        await ProgramarActualizacionAsync(
+            fecha,
+            TxtBuscar.Text,
+            aplicarDemora: false);
+    }
+
+    private async void CmbClase_SelectedIndexChanged(
         object sender,
         EventArgs e)
     {
