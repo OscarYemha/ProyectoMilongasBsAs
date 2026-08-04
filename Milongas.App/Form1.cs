@@ -10,11 +10,11 @@ public partial class Form1 : Form
     private readonly AgendaService agendaService;
     private readonly DistanciaService distanciaService;
 
-    // Protege todas las operaciones que usan Chromium.
+    // Evita que dos operaciones usen Chromium al mismo tiempo.
     private readonly SemaphoreSlim navegadorSemaphore =
         new(1, 1);
 
-    // Permite cancelar búsquedas anteriores.
+    // Permite cancelar una actualización anterior.
     private CancellationTokenSource? filtroCancellationTokenSource;
 
     private List<Milonga> agenda = new();
@@ -39,6 +39,7 @@ public partial class Form1 : Form
             new DistanciaService();
 
         ConfigurarTabla();
+        ConfigurarOrden();
 
         FormClosed += Form1_FormClosed;
     }
@@ -52,6 +53,8 @@ public partial class Form1 : Form
         BtnCargar.Enabled = false;
         CmbFecha.Enabled = false;
         TxtBuscar.Enabled = false;
+        CmbOrden.Enabled = false;
+
         BtnCargar.Text = "Cargando...";
 
         try
@@ -108,6 +111,8 @@ public partial class Form1 : Form
             BtnCargar.Enabled = true;
             CmbFecha.Enabled = agendaCargada;
             TxtBuscar.Enabled = agendaCargada;
+            CmbOrden.Enabled = agendaCargada;
+
             BtnCargar.Text = "Cargar agenda";
         }
     }
@@ -149,7 +154,8 @@ public partial class Form1 : Form
                     ? indiceHoy
                     : 0;
 
-            if (CmbFecha.SelectedItem is DateOnly fechaSeleccionada)
+            if (CmbFecha.SelectedItem
+                is DateOnly fechaSeleccionada)
             {
                 return fechaSeleccionada;
             }
@@ -178,7 +184,7 @@ public partial class Form1 : Form
 
         try
         {
-            // Evita iniciar una navegación por cada letra escrita.
+            // Evita ejecutar una búsqueda por cada letra escrita.
             if (aplicarDemora)
             {
                 await Task.Delay(
@@ -193,7 +199,7 @@ public partial class Form1 : Form
         }
         catch (OperationCanceledException)
         {
-            // Es normal cuando el usuario cambia el texto o la fecha.
+            // Cancelar una búsqueda anterior es un comportamiento normal.
         }
     }
 
@@ -216,7 +222,7 @@ public partial class Form1 : Form
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        // Mostramos primero los datos básicos inmediatamente.
+        // Primero mostramos la información que ya tenemos.
         ActualizarTabla(resultado);
 
         if (resultado.Count == 0)
@@ -261,9 +267,12 @@ public partial class Form1 : Form
             latitudOrigen,
             longitudOrigen);
 
-        resultado =
-            distanciaService.OrdenarPorDistancia(
-                resultado);
+        if (CmbOrden.SelectedItem?.ToString() == "Distancia")
+        {
+            resultado =
+                distanciaService.OrdenarPorDistancia(
+                    resultado);
+        }
 
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -336,6 +345,16 @@ public partial class Form1 : Form
             });
     }
 
+    private void ConfigurarOrden()
+    {
+        CmbOrden.Items.Clear();
+
+        CmbOrden.Items.Add("Horario");
+        CmbOrden.Items.Add("Distancia");
+
+        CmbOrden.SelectedIndex = 0;
+    }
+
     private async void CmbFecha_SelectedIndexChanged(
         object sender,
         EventArgs e)
@@ -368,6 +387,22 @@ public partial class Form1 : Form
             fecha,
             TxtBuscar.Text,
             aplicarDemora: true);
+    }
+
+    private async void CmbOrden_SelectedIndexChanged(
+        object sender,
+        EventArgs e)
+    {
+        if (!agendaCargada ||
+            CmbFecha.SelectedItem is not DateOnly fecha)
+        {
+            return;
+        }
+
+        await ProgramarActualizacionAsync(
+            fecha,
+            TxtBuscar.Text,
+            aplicarDemora: false);
     }
 
     private async void Form1_FormClosed(
