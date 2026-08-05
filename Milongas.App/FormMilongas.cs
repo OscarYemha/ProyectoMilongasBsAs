@@ -4,7 +4,7 @@ using Milongas.Extractor.Services;
 
 namespace Milongas.App;
 
-public partial class Form1 : Form
+public partial class FormMilongas : Form
 {
     private readonly HoyMilongaService hoyMilongaService;
     private readonly AgendaService agendaService;
@@ -26,7 +26,7 @@ public partial class Form1 : Form
     private const string Url =
         "https://www.hoy-milonga.com/buenos-aires/es/milongas";
 
-    public Form1()
+    public FormMilongas()
     {
         InitializeComponent();
 

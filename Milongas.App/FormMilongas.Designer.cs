@@ -1,6 +1,6 @@
 ﻿namespace Milongas.App
 {
-    partial class Form1
+    partial class FormMilongas
     {
         /// <summary>
         ///  Required designer variable.
