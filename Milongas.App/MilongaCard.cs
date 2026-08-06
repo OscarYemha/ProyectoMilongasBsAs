@@ -4,11 +4,18 @@ namespace Milongas.App;
 
 public partial class MilongaCard : UserControl
 {
+    private readonly Func<Milonga, Task<MilongaDetalle>>
+        obtenerDetalleAsync;
+
     private Milonga? milonga;
 
-    public MilongaCard()
+    public MilongaCard(
+        Func<Milonga, Task<MilongaDetalle>> obtenerDetalleAsync)
     {
         InitializeComponent();
+
+        this.obtenerDetalleAsync =
+            obtenerDetalleAsync;
 
         Click += MilongaCard_Click;
         PicImagen.Click += MilongaCard_Click;
@@ -48,7 +55,8 @@ public partial class MilongaCard : UserControl
         if (!string.IsNullOrWhiteSpace(milonga.Salon) &&
             !string.IsNullOrWhiteSpace(milonga.Barrio))
         {
-            return $"{milonga.Salon} · {milonga.Barrio}";
+            return
+                $"{milonga.Salon} · {milonga.Barrio}";
         }
 
         if (!string.IsNullOrWhiteSpace(milonga.Salon))
@@ -70,14 +78,15 @@ public partial class MilongaCard : UserControl
         if (milonga.DistanciaKm.HasValue)
         {
             return
-                $"{clase} · {milonga.DistanciaKm.Value:0.0} km";
+                $"{clase} · " +
+                $"{milonga.DistanciaKm.Value:0.0} km";
         }
 
         return clase;
     }
 
     private void CargarImagen(
-    Milonga milonga)
+        Milonga milonga)
     {
         if (string.IsNullOrWhiteSpace(milonga.Imagen))
         {
@@ -107,14 +116,16 @@ public partial class MilongaCard : UserControl
         }
 
         FormDetalleMilonga formulario =
-            new FormDetalleMilonga(milonga);
+            new FormDetalleMilonga(
+                milonga,
+                obtenerDetalleAsync);
 
         formulario.ShowDialog();
     }
 
     private void MilongaCard_Click(
-    object? sender,
-    EventArgs e)
+        object? sender,
+        EventArgs e)
     {
         AbrirDetalle();
     }

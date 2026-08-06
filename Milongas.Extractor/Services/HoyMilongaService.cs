@@ -194,4 +194,22 @@ public class HoyMilongaService : IAsyncDisposable
     {
         await browserService.DisposeAsync();
     }
+
+    public async Task<MilongaDetalle> ObtenerDetalleAsync(
+    Milonga milonga)
+    {
+        string urlDetalle =
+            "https://www.hoy-milonga.com" +
+            milonga.Link;
+
+        string htmlDetalle =
+            await browserService.ObtenerHtmlDetalleAsync(
+                urlDetalle);
+
+        MilongaDetalle detalle =
+            detalleExtractor.ObtenerDetalle(
+                htmlDetalle);
+
+        return detalle;
+    }
 }

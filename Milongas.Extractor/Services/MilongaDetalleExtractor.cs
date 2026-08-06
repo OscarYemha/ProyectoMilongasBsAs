@@ -11,8 +11,8 @@ public class MilongaDetalleExtractor
         Milonga milonga,
         string html)
     {
-        HtmlDocument documento = new();
-        documento.LoadHtml(html);
+        HtmlDocument documento =
+            CargarDocumento(html);
 
         milonga.Direccion =
             ObtenerDireccion(documento);
@@ -22,6 +22,90 @@ public class MilongaDetalleExtractor
 
         milonga.Latitud = latitud;
         milonga.Longitud = longitud;
+    }
+
+    public MilongaDetalle ObtenerDetalle(
+        string html)
+    {
+        HtmlDocument documento =
+            CargarDocumento(html);
+
+        (double? latitud, double? longitud) =
+            ObtenerCoordenadas(documento);
+
+        MilongaDetalle detalle = new()
+        {
+            Direccion =
+                ObtenerDireccion(documento),
+
+            Latitud =
+                latitud,
+
+            Longitud =
+                longitud,
+
+            Organizadores =
+                ObtenerOrganizadores(documento),
+
+            Estado =
+                ObtenerEstado(documento),
+
+            RecomiendaReservar =
+                ObtenerRecomiendaReservar(documento),
+
+            Facebook =
+                ObtenerContacto(
+                    documento,
+                    "contact-options-facebook"),
+
+            Instagram =
+                ObtenerContacto(
+                    documento,
+                    "contact-options-instagram"),
+
+            YouTube =
+                ObtenerContacto(
+                    documento,
+                    "contact-options-youtube"),
+
+            Email =
+                ObtenerContacto(
+                    documento,
+                    "contact-options-email"),
+
+            WhatsApp =
+                ObtenerContacto(
+                    documento,
+                    "contact-options-whatsapp"),
+
+            Telefono =
+                ObtenerContacto(
+                    documento,
+                    "contact-options-phone"),
+
+            SitioWeb =
+                ObtenerContacto(
+                    documento,
+                    "contact-options-website"),
+
+            Descripcion =
+                ObtenerDescripcion(documento),
+
+            ImagenDetalle =
+                ObtenerImagenDetalle(documento)
+        };
+
+        return detalle;
+    }
+
+    private static HtmlDocument CargarDocumento(
+        string html)
+    {
+        HtmlDocument documento = new();
+
+        documento.LoadHtml(html);
+
+        return documento;
     }
 
     private static string ObtenerDireccion(
@@ -40,7 +124,9 @@ public class MilongaDetalleExtractor
             nodoDireccion.InnerText);
     }
 
-    private static (double? Latitud, double? Longitud)
+    private static (
+        double? Latitud,
+        double? Longitud)
         ObtenerCoordenadas(
             HtmlDocument documento)
     {
@@ -59,10 +145,11 @@ public class MilongaDetalleExtractor
                     "href",
                     ""));
 
-        Match coincidencia = Regex.Match(
-            href,
-            @"daddr=(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)",
-            RegexOptions.IgnoreCase);
+        Match coincidencia =
+            Regex.Match(
+                href,
+                @"daddr=(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)",
+                RegexOptions.IgnoreCase);
 
         if (!coincidencia.Success)
         {
@@ -92,6 +179,114 @@ public class MilongaDetalleExtractor
         return (latitud, longitud);
     }
 
+    private static string ObtenerOrganizadores(
+        HtmlDocument documento)
+    {
+        HtmlNode? nodoOrganizadores =
+            documento.DocumentNode.SelectSingleNode(
+                "//span[contains(normalize-space(.),'Organizadores/as:')]");
+
+        if (nodoOrganizadores is null)
+        {
+            return "";
+        }
+
+        string texto =
+            LimpiarTexto(
+                nodoOrganizadores.InnerText);
+
+        texto =
+            Regex.Replace(
+                texto,
+                @"^Organizadores/as:\s*",
+                "",
+                RegexOptions.IgnoreCase);
+
+        return texto.Trim();
+    }
+
+    private static string ObtenerEstado(
+        HtmlDocument documento)
+    {
+        HtmlNode? nodoEstado =
+            documento.DocumentNode.SelectSingleNode(
+                "//span[contains(@class,'badge-pill') and " +
+                "contains(@class,'text-success')]");
+
+        if (nodoEstado is null)
+        {
+            return "";
+        }
+
+        return LimpiarTexto(
+            nodoEstado.InnerText);
+    }
+
+    private static bool ObtenerRecomiendaReservar(
+        HtmlDocument documento)
+    {
+        HtmlNode? nodoReserva =
+            documento.DocumentNode.SelectSingleNode(
+                "//span[contains(@class,'text-danger') and " +
+                "contains(normalize-space(.),'Se aconseja reservar')]");
+
+        return nodoReserva is not null;
+    }
+
+    private static string ObtenerContacto(
+        HtmlDocument documento,
+        string id)
+    {
+        HtmlNode? nodo =
+            documento.DocumentNode.SelectSingleNode(
+                $"//a[@id='{id}']");
+
+        if (nodo is null)
+        {
+            return "";
+        }
+
+        return HtmlEntity.DeEntitize(
+            nodo.GetAttributeValue(
+                "href",
+                ""));
+    }
+
+    private static string ObtenerDescripcion(
+        HtmlDocument documento)
+    {
+        HtmlNode? nodoDescripcion =
+            documento.DocumentNode.SelectSingleNode(
+                "//p[contains(@class,'pre-line')]");
+
+        if (nodoDescripcion is null)
+        {
+            return "";
+        }
+
+        return LimpiarTexto(
+            nodoDescripcion.InnerText);
+    }
+
+    private static string ObtenerImagenDetalle(
+        HtmlDocument documento)
+    {
+        HtmlNode? nodoImagen =
+            documento.DocumentNode.SelectSingleNode(
+                "//img[@alt='photo' and " +
+                "contains(@src,'/data_images/event/photo/')]");
+
+        if (nodoImagen is null)
+        {
+            return "";
+        }
+
+        return HtmlEntity.DeEntitize(
+            nodoImagen.GetAttributeValue(
+                "src",
+                ""));
+    }
+
     private static string LimpiarTexto(
         string? texto)
     {
@@ -101,7 +296,8 @@ public class MilongaDetalleExtractor
         }
 
         string decodificado =
-            HtmlEntity.DeEntitize(texto);
+            HtmlEntity.DeEntitize(
+                texto);
 
         return string.Join(
             " ",

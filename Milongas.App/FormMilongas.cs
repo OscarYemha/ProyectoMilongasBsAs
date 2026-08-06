@@ -395,7 +395,8 @@ public partial class FormMilongas : Form
         foreach (Milonga milonga in milongas)
         {
             MilongaCard card =
-                new MilongaCard();
+     new MilongaCard(
+         ObtenerDetalleSeguroAsync);
 
             card.CargarMilonga(
                 milonga);
@@ -580,5 +581,23 @@ public partial class FormMilongas : Form
         await hoyMilongaService.DisposeAsync();
 
         navegadorSemaphore.Dispose();
+    }
+
+    private async Task<MilongaDetalle>
+    ObtenerDetalleSeguroAsync(
+        Milonga milonga)
+    {
+        await navegadorSemaphore.WaitAsync();
+
+        try
+        {
+            return
+                await hoyMilongaService.ObtenerDetalleAsync(
+                    milonga);
+        }
+        finally
+        {
+            navegadorSemaphore.Release();
+        }
     }
 }
