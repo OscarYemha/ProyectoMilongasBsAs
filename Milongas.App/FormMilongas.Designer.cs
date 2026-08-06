@@ -38,12 +38,13 @@
             label2 = new Label();
             label3 = new Label();
             CmbClase = new ComboBox();
+            FlpMilongas = new FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)DgvMilongas).BeginInit();
             SuspendLayout();
             // 
             // BtnCargar
             // 
-            BtnCargar.Location = new Point(194, 29);
+            BtnCargar.Location = new Point(194, 12);
             BtnCargar.Name = "BtnCargar";
             BtnCargar.Size = new Size(100, 23);
             BtnCargar.TabIndex = 0;
@@ -54,7 +55,7 @@
             // CmbFecha
             // 
             CmbFecha.FormattingEnabled = true;
-            CmbFecha.Location = new Point(58, 79);
+            CmbFecha.Location = new Point(58, 41);
             CmbFecha.Name = "CmbFecha";
             CmbFecha.Size = new Size(387, 23);
             CmbFecha.TabIndex = 1;
@@ -62,7 +63,7 @@
             // 
             // TxtBuscar
             // 
-            TxtBuscar.Location = new Point(58, 127);
+            TxtBuscar.Location = new Point(58, 70);
             TxtBuscar.Name = "TxtBuscar";
             TxtBuscar.Size = new Size(387, 23);
             TxtBuscar.TabIndex = 2;
@@ -71,15 +72,15 @@
             // DgvMilongas
             // 
             DgvMilongas.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            DgvMilongas.Location = new Point(58, 376);
+            DgvMilongas.Location = new Point(58, 285);
             DgvMilongas.Name = "DgvMilongas";
-            DgvMilongas.Size = new Size(387, 211);
+            DgvMilongas.Size = new Size(387, 151);
             DgvMilongas.TabIndex = 3;
             // 
             // CmbOrden
             // 
             CmbOrden.FormattingEnabled = true;
-            CmbOrden.Location = new Point(58, 190);
+            CmbOrden.Location = new Point(58, 119);
             CmbOrden.Name = "CmbOrden";
             CmbOrden.Size = new Size(387, 23);
             CmbOrden.TabIndex = 4;
@@ -88,7 +89,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(58, 172);
+            label1.Location = new Point(58, 101);
             label1.Name = "label1";
             label1.Size = new Size(74, 15);
             label1.TabIndex = 5;
@@ -97,7 +98,7 @@
             // CmbBarrio
             // 
             CmbBarrio.FormattingEnabled = true;
-            CmbBarrio.Location = new Point(58, 255);
+            CmbBarrio.Location = new Point(58, 178);
             CmbBarrio.Name = "CmbBarrio";
             CmbBarrio.Size = new Size(387, 23);
             CmbBarrio.TabIndex = 6;
@@ -106,7 +107,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(58, 237);
+            label2.Location = new Point(58, 160);
             label2.Name = "label2";
             label2.Size = new Size(41, 15);
             label2.TabIndex = 7;
@@ -115,7 +116,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(58, 298);
+            label3.Location = new Point(58, 223);
             label3.Name = "label3";
             label3.Size = new Size(35, 15);
             label3.TabIndex = 8;
@@ -124,17 +125,28 @@
             // CmbClase
             // 
             CmbClase.FormattingEnabled = true;
-            CmbClase.Location = new Point(58, 316);
+            CmbClase.Location = new Point(58, 241);
             CmbClase.Name = "CmbClase";
             CmbClase.Size = new Size(387, 23);
             CmbClase.TabIndex = 9;
             CmbClase.SelectedIndexChanged += CmbClase_SelectedIndexChanged;
             // 
-            // Form1
+            // FlpMilongas
+            // 
+            FlpMilongas.AutoScroll = true;
+            FlpMilongas.FlowDirection = FlowDirection.TopDown;
+            FlpMilongas.Location = new Point(58, 460);
+            FlpMilongas.Name = "FlpMilongas";
+            FlpMilongas.Size = new Size(496, 432);
+            FlpMilongas.TabIndex = 10;
+            FlpMilongas.WrapContents = false;
+            // 
+            // FormMilongas
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 634);
+            ClientSize = new Size(800, 904);
+            Controls.Add(FlpMilongas);
             Controls.Add(CmbClase);
             Controls.Add(label3);
             Controls.Add(label2);
@@ -145,7 +157,7 @@
             Controls.Add(TxtBuscar);
             Controls.Add(CmbFecha);
             Controls.Add(BtnCargar);
-            Name = "Form1";
+            Name = "FormMilongas";
             Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)DgvMilongas).EndInit();
             ResumeLayout(false);
@@ -164,5 +176,6 @@
         private Label label2;
         private Label label3;
         private ComboBox CmbClase;
+        private FlowLayoutPanel FlpMilongas;
     }
 }

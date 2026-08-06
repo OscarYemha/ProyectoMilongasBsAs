@@ -15,6 +15,9 @@ namespace Milongas.App
         public FormPrincipal()
         {
             InitializeComponent();
+
+            PicMilongas.LoadAsync(
+        "https://www.hoy-milonga.com/img/nav-milongas.jpeg");
         }
 
         private void PnlMilongas_Click(

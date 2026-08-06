@@ -11,8 +11,9 @@ public class HtmlExtractor
         HtmlDocument documento = new();
         documento.LoadHtml(html);
 
-        HtmlNodeCollection? tarjetas = documento.DocumentNode.SelectNodes(
-            "//a[contains(concat(' ', normalize-space(@class), ' '), ' event-list-item ')]");
+        HtmlNodeCollection? tarjetas =
+            documento.DocumentNode.SelectNodes(
+                "//a[contains(concat(' ', normalize-space(@class), ' '), ' event-list-item ')]");
 
         List<Milonga> milongas = new();
 
@@ -23,12 +24,16 @@ public class HtmlExtractor
 
         foreach (HtmlNode tarjeta in tarjetas)
         {
-            string link = ObtenerLink(tarjeta);
-            string horarioClase = ObtenerHorarioClase(tarjeta);
+            string link =
+                ObtenerLink(tarjeta);
+
+            string horarioClase =
+                ObtenerHorarioClase(tarjeta);
 
             Milonga milonga = new()
             {
                 Id = ObtenerId(link),
+                Tipo = ObtenerTipo(tarjeta),
                 Nombre = ObtenerNombre(tarjeta),
                 Horario = ObtenerHorario(tarjeta),
                 Salon = ObtenerSalon(tarjeta),
@@ -37,7 +42,9 @@ public class HtmlExtractor
                 Link = link,
                 Cancelada = EstaCancelada(tarjeta),
                 HorarioClase = horarioClase,
-                TieneClase = !string.IsNullOrWhiteSpace(horarioClase)
+                TieneClase =
+                    !string.IsNullOrWhiteSpace(
+                        horarioClase)
             };
 
             milongas.Add(milonga);
@@ -46,29 +53,48 @@ public class HtmlExtractor
         return milongas;
     }
 
-    private static string ObtenerNombre(HtmlNode tarjeta)
+    private static string ObtenerTipo(
+        HtmlNode tarjeta)
     {
-        HtmlNode? nodoNombre = tarjeta.SelectSingleNode(
-            ".//h4[contains(@class,'font-weight-bold')]");
+        HtmlNode? nodoTipo =
+            tarjeta.SelectSingleNode(
+                ".//small[contains(@class,'text-uppercase')]");
 
-        return LimpiarTexto(nodoNombre?.InnerText);
+        return LimpiarTexto(
+            nodoTipo?.InnerText);
     }
 
-    private static string ObtenerHorario(HtmlNode tarjeta)
+    private static string ObtenerNombre(
+        HtmlNode tarjeta)
     {
-        string textoTarjeta = LimpiarTexto(tarjeta.InnerText);
+        HtmlNode? nodoNombre =
+            tarjeta.SelectSingleNode(
+                ".//h4[contains(@class,'font-weight-bold')]");
 
-        Match coincidencia = Regex.Match(
-            textoTarjeta,
-            @"\b\d{1,2}:\d{2}\s*-\s*(?:\d{1,2}:\d{2}|Medianoche)\b",
-            RegexOptions.IgnoreCase);
+        return LimpiarTexto(
+            nodoNombre?.InnerText);
+    }
+
+    private static string ObtenerHorario(
+        HtmlNode tarjeta)
+    {
+        string textoTarjeta =
+            LimpiarTexto(
+                tarjeta.InnerText);
+
+        Match coincidencia =
+            Regex.Match(
+                textoTarjeta,
+                @"\b\d{1,2}:\d{2}\s*-\s*(?:\d{1,2}:\d{2}|Medianoche)\b",
+                RegexOptions.IgnoreCase);
 
         return coincidencia.Success
             ? coincidencia.Value
             : "";
     }
 
-    private static string ObtenerSalon(HtmlNode tarjeta)
+    private static string ObtenerSalon(
+        HtmlNode tarjeta)
     {
         (string salon, string barrio) =
             ObtenerUbicacion(tarjeta);
@@ -76,8 +102,8 @@ public class HtmlExtractor
         return salon;
     }
 
-
-    private static string ObtenerBarrio(HtmlNode tarjeta)
+    private static string ObtenerBarrio(
+        HtmlNode tarjeta)
     {
         (string salon, string barrio) =
             ObtenerUbicacion(tarjeta);
@@ -85,11 +111,13 @@ public class HtmlExtractor
         return barrio;
     }
 
-    private static (string Salon, string Barrio) ObtenerUbicacion(
-    HtmlNode tarjeta)
+    private static (string Salon, string Barrio)
+        ObtenerUbicacion(
+            HtmlNode tarjeta)
     {
-        HtmlNodeCollection? bloques = tarjeta.SelectNodes(
-            ".//div[contains(@class,'lh-20')]");
+        HtmlNodeCollection? bloques =
+            tarjeta.SelectNodes(
+                ".//div[contains(@class,'lh-20')]");
 
         if (bloques is null)
         {
@@ -98,7 +126,6 @@ public class HtmlExtractor
 
         foreach (HtmlNode bloque in bloques)
         {
-            // Identificamos el bloque de ubicación por el ícono.
             if (!bloque.InnerHtml.Contains(
                 "location-icon",
                 StringComparison.OrdinalIgnoreCase))
@@ -106,27 +133,30 @@ public class HtmlExtractor
                 continue;
             }
 
-            string html = bloque.InnerHtml;
+            string html =
+                bloque.InnerHtml;
 
-            // Conservamos el <br> como separación entre salón y ubicación.
-            html = Regex.Replace(
-                html,
-                @"<br\s*/?>",
-                "\n",
-                RegexOptions.IgnoreCase);
+            html =
+                Regex.Replace(
+                    html,
+                    @"<br\s*/?>",
+                    "\n",
+                    RegexOptions.IgnoreCase);
 
-            // Eliminamos el resto de las etiquetas HTML.
-            html = Regex.Replace(
-                html,
-                @"<[^>]+>",
-                " ");
+            html =
+                Regex.Replace(
+                    html,
+                    @"<[^>]+>",
+                    " ");
 
             string texto =
-                HtmlEntity.DeEntitize(html);
+                HtmlEntity.DeEntitize(
+                    html);
 
-            string[] lineas = texto.Split(
-                '\n',
-                StringSplitOptions.RemoveEmptyEntries);
+            string[] lineas =
+                texto.Split(
+                    '\n',
+                    StringSplitOptions.RemoveEmptyEntries);
 
             if (lineas.Length == 0)
             {
@@ -134,22 +164,23 @@ public class HtmlExtractor
             }
 
             string salon =
-                LimpiarTexto(lineas[0]);
+                LimpiarTexto(
+                    lineas[0]);
 
             string barrio = "";
 
             if (lineas.Length >= 2)
             {
                 barrio =
-                    LimpiarTexto(lineas[1]);
+                    LimpiarTexto(
+                        lineas[1]);
 
-                // Formato habitual:
-                // Buenos Aires - Palermo
-                barrio = Regex.Replace(
-                    barrio,
-                    @"^Buenos Aires\s*-\s*",
-                    "",
-                    RegexOptions.IgnoreCase);
+                barrio =
+                    Regex.Replace(
+                        barrio,
+                        @"^Buenos Aires\s*-\s*",
+                        "",
+                        RegexOptions.IgnoreCase);
             }
 
             return (salon, barrio);
@@ -158,27 +189,36 @@ public class HtmlExtractor
         return ("", "");
     }
 
-    private static string ObtenerImagen(HtmlNode tarjeta)
+    private static string ObtenerImagen(
+        HtmlNode tarjeta)
     {
-        HtmlNode? nodoImagen = tarjeta.SelectSingleNode(
-            ".//img[contains(@src,'/data_images/event/logo/')]");
+        HtmlNode? nodoImagen =
+            tarjeta.SelectSingleNode(
+                ".//img[contains(@src,'/data_images/event/logo/')]");
 
         return HtmlEntity.DeEntitize(
-            nodoImagen?.GetAttributeValue("src", "") ?? "");
+            nodoImagen?.GetAttributeValue(
+                "src",
+                "") ?? "");
     }
 
-    private static string ObtenerLink(HtmlNode tarjeta)
+    private static string ObtenerLink(
+        HtmlNode tarjeta)
     {
         return HtmlEntity.DeEntitize(
-            tarjeta.GetAttributeValue("href", ""));
+            tarjeta.GetAttributeValue(
+                "href",
+                ""));
     }
 
-    private static int ObtenerId(string link)
+    private static int ObtenerId(
+        string link)
     {
-        Match coincidencia = Regex.Match(
-            link,
-            @"/milonga/(\d+)/",
-            RegexOptions.IgnoreCase);
+        Match coincidencia =
+            Regex.Match(
+                link,
+                @"/milonga/(\d+)/",
+                RegexOptions.IgnoreCase);
 
         if (!coincidencia.Success)
         {
@@ -192,56 +232,65 @@ public class HtmlExtractor
                 : 0;
     }
 
-    private static bool EstaCancelada(HtmlNode tarjeta)
+    private static bool EstaCancelada(
+        HtmlNode tarjeta)
     {
-        string texto = LimpiarTexto(tarjeta.InnerText);
+        string texto =
+            LimpiarTexto(
+                tarjeta.InnerText);
 
         return texto.Contains(
             "CANCELADO",
             StringComparison.OrdinalIgnoreCase);
     }
 
-    private static string LimpiarTexto(string? texto)
-    {
-        if (string.IsNullOrWhiteSpace(texto))
-        {
-            return "";
-        }
-
-        string decodificado = HtmlEntity.DeEntitize(texto);
-
-        return string.Join(
-            " ",
-            decodificado.Split(
-                [' ', '\r', '\n', '\t'],
-                StringSplitOptions.RemoveEmptyEntries));
-    }
-
     private static string ObtenerHorarioClase(
-    HtmlNode tarjeta)
+        HtmlNode tarjeta)
     {
-        HtmlNode? iconoClase = tarjeta.SelectSingleNode(
-            ".//*[@name and contains(@name,'classes')]");
+        HtmlNode? iconoClase =
+            tarjeta.SelectSingleNode(
+                ".//*[@name and contains(@name,'classes')]");
 
         if (iconoClase is null)
         {
             return "";
         }
 
-        HtmlNode? bloqueClase = iconoClase.SelectSingleNode(
-            "ancestor::div[contains(concat(' ', normalize-space(@class), ' '), ' lh-20 ')][1]");
+        HtmlNode? bloqueClase =
+            iconoClase.SelectSingleNode(
+                "ancestor::div[contains(concat(' ', normalize-space(@class), ' '), ' lh-20 ')][1]");
 
         if (bloqueClase is null)
         {
             return "";
         }
 
-        Match coincidencia = Regex.Match(
-            bloqueClase.OuterHtml,
-            @"\b\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}\b");
+        Match coincidencia =
+            Regex.Match(
+                bloqueClase.OuterHtml,
+                @"\b\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}\b");
 
         return coincidencia.Success
             ? coincidencia.Value
             : "";
+    }
+
+    private static string LimpiarTexto(
+        string? texto)
+    {
+        if (string.IsNullOrWhiteSpace(texto))
+        {
+            return "";
+        }
+
+        string decodificado =
+            HtmlEntity.DeEntitize(
+                texto);
+
+        return string.Join(
+            " ",
+            decodificado.Split(
+                [' ', '\r', '\n', '\t'],
+                StringSplitOptions.RemoveEmptyEntries));
     }
 }

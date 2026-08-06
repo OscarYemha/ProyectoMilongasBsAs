@@ -31,4 +31,6 @@ public class Milonga
     public double? Longitud { get; set; }
 
     public double? DistanciaKm { get; set; }
+
+    public string Tipo { get; set; } = "";
 }

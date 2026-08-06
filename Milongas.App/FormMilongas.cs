@@ -385,10 +385,27 @@ public partial class FormMilongas : Form
     }
 
     private void ActualizarTabla(
-        List<Milonga> milongas)
+     List<Milonga> milongas)
     {
         DgvMilongas.DataSource = null;
         DgvMilongas.DataSource = milongas;
+
+        FlpMilongas.Controls.Clear();
+
+        foreach (Milonga milonga in milongas)
+        {
+            MilongaCard card =
+                new MilongaCard();
+
+            card.CargarMilonga(
+                milonga);
+
+            card.Width =
+                FlpMilongas.ClientSize.Width - 25;
+
+            FlpMilongas.Controls.Add(
+                card);
+        }
     }
 
     private void ConfigurarTabla()
