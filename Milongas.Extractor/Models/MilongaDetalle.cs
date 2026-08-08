@@ -31,4 +31,6 @@ public class MilongaDetalle
     public string YouTube { get; set; } = "";
 
     public string SitioWeb { get; set; } = "";
+
+    public string Foto { get; set; } = "";
 }

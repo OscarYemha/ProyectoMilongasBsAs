@@ -92,7 +92,10 @@ public class MilongaDetalleExtractor
                 ObtenerDescripcion(documento),
 
             ImagenDetalle =
-                ObtenerImagenDetalle(documento)
+                ObtenerImagenDetalle(documento),
+
+            Foto =
+                ObtenerFoto(documento)
         };
 
         return detalle;
@@ -206,12 +209,12 @@ public class MilongaDetalleExtractor
     }
 
     private static string ObtenerEstado(
-        HtmlDocument documento)
+     HtmlDocument documento)
     {
         HtmlNode? nodoEstado =
             documento.DocumentNode.SelectSingleNode(
-                "//span[contains(@class,'badge-pill') and " +
-                "contains(@class,'text-success')]");
+                "//span[contains(@class,'badge') and " +
+                "contains(@class,'badge-pill')]");
 
         if (nodoEstado is null)
         {
@@ -269,12 +272,12 @@ public class MilongaDetalleExtractor
     }
 
     private static string ObtenerImagenDetalle(
-        HtmlDocument documento)
+    HtmlDocument documento)
     {
         HtmlNode? nodoImagen =
             documento.DocumentNode.SelectSingleNode(
-                "//img[@alt='photo' and " +
-                "contains(@src,'/data_images/event/photo/')]");
+                "//div[contains(@class,'grid-logo')]" +
+                "//img[contains(@src,'/data_images/event/logo/')]");
 
         if (nodoImagen is null)
         {
@@ -304,5 +307,24 @@ public class MilongaDetalleExtractor
             decodificado.Split(
                 [' ', '\r', '\n', '\t'],
                 StringSplitOptions.RemoveEmptyEntries));
+    }
+
+    private static string ObtenerFoto(
+    HtmlDocument documento)
+    {
+        HtmlNode? nodoImagen =
+            documento.DocumentNode.SelectSingleNode(
+                "//img[@alt='photo' and " +
+                "contains(@src,'/data_images/event/photo/')]");
+
+        if (nodoImagen is null)
+        {
+            return "";
+        }
+
+        return HtmlEntity.DeEntitize(
+            nodoImagen.GetAttributeValue(
+                "src",
+                ""));
     }
 }
