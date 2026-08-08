@@ -40,52 +40,62 @@
             LblClase = new Label();
             LblDistancia = new Label();
             LblReserva = new Label();
+            FlpDetalle = new FlowLayoutPanel();
+            PnlCabecera = new Panel();
+            LblCargando = new Label();
+            PnlInformacion = new Panel();
+            FlpDescripcion = new FlowLayoutPanel();
             LblDescripcion = new Label();
             PicFoto = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)PicImagen).BeginInit();
+            FlpDetalle.SuspendLayout();
+            PnlCabecera.SuspendLayout();
+            PnlInformacion.SuspendLayout();
+            FlpDescripcion.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)PicFoto).BeginInit();
             SuspendLayout();
             // 
             // PicImagen
             // 
-            PicImagen.Location = new Point(183, 24);
+            PicImagen.Location = new Point(18, 19);
             PicImagen.Name = "PicImagen";
-            PicImagen.Size = new Size(134, 80);
+            PicImagen.Size = new Size(90, 90);
             PicImagen.SizeMode = PictureBoxSizeMode.Zoom;
             PicImagen.TabIndex = 0;
             PicImagen.TabStop = false;
             // 
             // LblTipo
             // 
-            LblTipo.AutoSize = true;
-            LblTipo.Location = new Point(183, 107);
+            LblTipo.Location = new Point(130, 19);
             LblTipo.Name = "LblTipo";
-            LblTipo.Size = new Size(38, 15);
+            LblTipo.Size = new Size(300, 20);
             LblTipo.TabIndex = 1;
             LblTipo.Text = "label1";
+            LblTipo.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // LblNombre
             // 
-            LblNombre.AutoSize = true;
-            LblNombre.Location = new Point(183, 122);
+            LblNombre.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            LblNombre.Location = new Point(130, 39);
             LblNombre.Name = "LblNombre";
-            LblNombre.Size = new Size(38, 15);
+            LblNombre.Size = new Size(350, 45);
             LblNombre.TabIndex = 2;
             LblNombre.Text = "label2";
+            LblNombre.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // LblEstado
             // 
-            LblEstado.AutoSize = true;
-            LblEstado.Location = new Point(183, 138);
+            LblEstado.Location = new Point(130, 84);
             LblEstado.Name = "LblEstado";
-            LblEstado.Size = new Size(38, 15);
+            LblEstado.Size = new Size(150, 25);
             LblEstado.TabIndex = 3;
             LblEstado.Text = "label3";
+            LblEstado.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // LblOrganizadores
             // 
             LblOrganizadores.AutoSize = true;
-            LblOrganizadores.Location = new Point(183, 228);
+            LblOrganizadores.Location = new Point(10, 0);
             LblOrganizadores.Name = "LblOrganizadores";
             LblOrganizadores.Size = new Size(38, 15);
             LblOrganizadores.TabIndex = 4;
@@ -94,7 +104,7 @@
             // LblHorario
             // 
             LblHorario.AutoSize = true;
-            LblHorario.Location = new Point(183, 153);
+            LblHorario.Location = new Point(10, 15);
             LblHorario.Name = "LblHorario";
             LblHorario.Size = new Size(38, 15);
             LblHorario.TabIndex = 5;
@@ -103,7 +113,7 @@
             // LblSalon
             // 
             LblSalon.AutoSize = true;
-            LblSalon.Location = new Point(183, 168);
+            LblSalon.Location = new Point(10, 30);
             LblSalon.Name = "LblSalon";
             LblSalon.Size = new Size(38, 15);
             LblSalon.TabIndex = 6;
@@ -112,7 +122,7 @@
             // LblDireccion
             // 
             LblDireccion.AutoSize = true;
-            LblDireccion.Location = new Point(183, 183);
+            LblDireccion.Location = new Point(10, 45);
             LblDireccion.Name = "LblDireccion";
             LblDireccion.Size = new Size(38, 15);
             LblDireccion.TabIndex = 7;
@@ -121,7 +131,7 @@
             // LblBarrio
             // 
             LblBarrio.AutoSize = true;
-            LblBarrio.Location = new Point(183, 198);
+            LblBarrio.Location = new Point(10, 60);
             LblBarrio.Name = "LblBarrio";
             LblBarrio.Size = new Size(38, 15);
             LblBarrio.TabIndex = 8;
@@ -130,7 +140,7 @@
             // LblClase
             // 
             LblClase.AutoSize = true;
-            LblClase.Location = new Point(183, 213);
+            LblClase.Location = new Point(10, 75);
             LblClase.Name = "LblClase";
             LblClase.Size = new Size(38, 15);
             LblClase.TabIndex = 9;
@@ -139,7 +149,7 @@
             // LblDistancia
             // 
             LblDistancia.AutoSize = true;
-            LblDistancia.Location = new Point(183, 243);
+            LblDistancia.Location = new Point(10, 90);
             LblDistancia.Name = "LblDistancia";
             LblDistancia.Size = new Size(44, 15);
             LblDistancia.TabIndex = 10;
@@ -148,26 +158,98 @@
             // LblReserva
             // 
             LblReserva.AutoSize = true;
-            LblReserva.Location = new Point(183, 258);
+            LblReserva.Location = new Point(10, 105);
             LblReserva.Name = "LblReserva";
             LblReserva.Size = new Size(44, 15);
             LblReserva.TabIndex = 11;
             LblReserva.Text = "label11";
             // 
+            // FlpDetalle
+            // 
+            FlpDetalle.AutoScroll = true;
+            FlpDetalle.Controls.Add(PnlCabecera);
+            FlpDetalle.Controls.Add(LblCargando);
+            FlpDetalle.Controls.Add(PnlInformacion);
+            FlpDetalle.Controls.Add(FlpDescripcion);
+            FlpDetalle.Dock = DockStyle.Fill;
+            FlpDetalle.FlowDirection = FlowDirection.TopDown;
+            FlpDetalle.Location = new Point(0, 0);
+            FlpDetalle.Name = "FlpDetalle";
+            FlpDetalle.Padding = new Padding(10);
+            FlpDetalle.Size = new Size(800, 763);
+            FlpDetalle.TabIndex = 14;
+            FlpDetalle.WrapContents = false;
+            // 
+            // PnlCabecera
+            // 
+            PnlCabecera.Controls.Add(LblEstado);
+            PnlCabecera.Controls.Add(LblNombre);
+            PnlCabecera.Controls.Add(LblTipo);
+            PnlCabecera.Controls.Add(PicImagen);
+            PnlCabecera.Location = new Point(13, 13);
+            PnlCabecera.Name = "PnlCabecera";
+            PnlCabecera.Size = new Size(520, 120);
+            PnlCabecera.TabIndex = 0;
+            // 
+            // LblCargando
+            // 
+            LblCargando.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            LblCargando.Location = new Point(13, 136);
+            LblCargando.Name = "LblCargando";
+            LblCargando.Size = new Size(500, 40);
+            LblCargando.TabIndex = 1;
+            LblCargando.Text = "Cargando Información...";
+            LblCargando.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // PnlInformacion
+            // 
+            PnlInformacion.AutoSize = true;
+            PnlInformacion.Controls.Add(LblOrganizadores);
+            PnlInformacion.Controls.Add(LblHorario);
+            PnlInformacion.Controls.Add(LblSalon);
+            PnlInformacion.Controls.Add(LblDireccion);
+            PnlInformacion.Controls.Add(LblBarrio);
+            PnlInformacion.Controls.Add(LblClase);
+            PnlInformacion.Controls.Add(LblDistancia);
+            PnlInformacion.Controls.Add(LblReserva);
+            PnlInformacion.Location = new Point(13, 184);
+            PnlInformacion.Margin = new Padding(3, 8, 3, 3);
+            PnlInformacion.Name = "PnlInformacion";
+            PnlInformacion.Size = new Size(57, 120);
+            PnlInformacion.TabIndex = 2;
+            // 
+            // FlpDescripcion
+            // 
+            FlpDescripcion.AutoSize = true;
+            FlpDescripcion.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            FlpDescripcion.Controls.Add(LblDescripcion);
+            FlpDescripcion.Controls.Add(PicFoto);
+            FlpDescripcion.FlowDirection = FlowDirection.TopDown;
+            FlpDescripcion.Location = new Point(13, 310);
+            FlpDescripcion.Name = "FlpDescripcion";
+            FlpDescripcion.Padding = new Padding(10);
+            FlpDescripcion.Size = new Size(500, 397);
+            FlpDescripcion.TabIndex = 14;
+            FlpDescripcion.WrapContents = false;
+            // 
             // LblDescripcion
             // 
             LblDescripcion.AutoSize = true;
-            LblDescripcion.Location = new Point(183, 273);
+            LblDescripcion.Location = new Point(10, 10);
+            LblDescripcion.Margin = new Padding(0, 0, 0, 12);
+            LblDescripcion.MaximumSize = new Size(490, 0);
             LblDescripcion.Name = "LblDescripcion";
             LblDescripcion.Size = new Size(44, 15);
             LblDescripcion.TabIndex = 12;
             LblDescripcion.Text = "label12";
+            LblDescripcion.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // PicFoto
             // 
-            PicFoto.Location = new Point(183, 291);
+            PicFoto.Location = new Point(10, 37);
+            PicFoto.Margin = new Padding(0);
             PicFoto.Name = "PicFoto";
-            PicFoto.Size = new Size(206, 123);
+            PicFoto.Size = new Size(480, 350);
             PicFoto.SizeMode = PictureBoxSizeMode.Zoom;
             PicFoto.TabIndex = 13;
             PicFoto.TabStop = false;
@@ -176,27 +258,20 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(PicFoto);
-            Controls.Add(LblDescripcion);
-            Controls.Add(LblReserva);
-            Controls.Add(LblDistancia);
-            Controls.Add(LblClase);
-            Controls.Add(LblBarrio);
-            Controls.Add(LblDireccion);
-            Controls.Add(LblSalon);
-            Controls.Add(LblHorario);
-            Controls.Add(LblOrganizadores);
-            Controls.Add(LblEstado);
-            Controls.Add(LblNombre);
-            Controls.Add(LblTipo);
-            Controls.Add(PicImagen);
+            ClientSize = new Size(800, 763);
+            Controls.Add(FlpDetalle);
             Name = "FormDetalleMilonga";
             Text = "FormDetalleMilonga";
             ((System.ComponentModel.ISupportInitialize)PicImagen).EndInit();
+            FlpDetalle.ResumeLayout(false);
+            FlpDetalle.PerformLayout();
+            PnlCabecera.ResumeLayout(false);
+            PnlInformacion.ResumeLayout(false);
+            PnlInformacion.PerformLayout();
+            FlpDescripcion.ResumeLayout(false);
+            FlpDescripcion.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)PicFoto).EndInit();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
@@ -213,6 +288,11 @@
         private Label LblClase;
         private Label LblDistancia;
         private Label LblReserva;
+        private FlowLayoutPanel FlpDetalle;
+        private Panel PnlCabecera;
+        private Label LblCargando;
+        private Panel PnlInformacion;
+        private FlowLayoutPanel FlpDescripcion;
         private Label LblDescripcion;
         private PictureBox PicFoto;
     }

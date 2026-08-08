@@ -209,10 +209,11 @@ public class MilongaDetalleExtractor
     }
 
     private static string ObtenerEstado(
-     HtmlDocument documento)
+    HtmlDocument documento)
     {
         HtmlNode? nodoEstado =
             documento.DocumentNode.SelectSingleNode(
+                "//div[contains(@class,'grid-title')]" +
                 "//span[contains(@class,'badge') and " +
                 "contains(@class,'badge-pill')]");
 

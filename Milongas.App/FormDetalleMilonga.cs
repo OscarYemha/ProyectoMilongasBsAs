@@ -31,9 +31,14 @@ public partial class FormDetalleMilonga : Form
     }
 
     private async void FormDetalleMilonga_Shown(
-        object? sender,
-        EventArgs e)
+    object? sender,
+    EventArgs e)
     {
+        LblCargando.Visible = true;
+        PnlCabecera.Visible = false;
+        PnlInformacion.Visible = false;
+        FlpDescripcion.Visible = false;
+
         try
         {
             UseWaitCursor = true;
@@ -42,10 +47,19 @@ public partial class FormDetalleMilonga : Form
                 await obtenerDetalleAsync(
                     milonga);
 
+            MostrarDatosBasicos();
             MostrarDetalle();
+
+            LblCargando.Visible = false;
+            PnlCabecera.Visible = true;
+            PnlInformacion.Visible = true;
+            FlpDescripcion.Visible = true;
         }
         catch (Exception ex)
         {
+            LblCargando.Text =
+                "No se pudo cargar la información.";
+
             MessageBox.Show(
                 ex.Message,
                 "Error al cargar el detalle",
@@ -58,12 +72,16 @@ public partial class FormDetalleMilonga : Form
         }
     }
 
-    private void MostrarDetalle()
+    private void MostrarDatosBasicos()
     {
-        if (detalle is null)
-        {
-            return;
-        }
+        LblEstado.Visible = false;
+        LblOrganizadores.Visible = false;
+        LblDireccion.Visible = false;
+        LblReserva.Visible = false;
+        LblDescripcion.Visible = false;
+
+        PicImagen.Visible = false;
+        PicFoto.Visible = false;
 
         LblTipo.Text =
             milonga.Tipo.ToUpper();
@@ -72,25 +90,12 @@ public partial class FormDetalleMilonga : Form
             milonga.Nombre;
 
         MostrarLabel(
-            LblEstado,
-            detalle.Estado);
-
-        MostrarLabel(
-            LblOrganizadores,
-            detalle.Organizadores,
-            "Organizan: ");
-
-        MostrarLabel(
             LblHorario,
             milonga.Horario);
 
         MostrarLabel(
             LblSalon,
             milonga.Salon);
-
-        MostrarLabel(
-            LblDireccion,
-            detalle.Direccion);
 
         MostrarLabel(
             LblBarrio,
@@ -114,6 +119,28 @@ public partial class FormDetalleMilonga : Form
             LblDistancia,
             distancia);
 
+    }
+
+    private void MostrarDetalle()
+    {
+        if (detalle is null)
+        {
+            return;
+        }
+
+        MostrarLabel(
+            LblEstado,
+            detalle.Estado);
+
+        MostrarLabel(
+            LblOrganizadores,
+            detalle.Organizadores,
+            "Organizan: ");
+
+        MostrarLabel(
+            LblDireccion,
+            detalle.Direccion);
+
         string reserva =
             detalle.RecomiendaReservar
                 ? "Se aconseja reservar"
@@ -127,8 +154,16 @@ public partial class FormDetalleMilonga : Form
             LblDescripcion,
             detalle.Descripcion);
 
+        ReacomodarInformacion();
+
         CargarImagenDetalle();
         CargarFoto();
+
+        FlpDescripcion.Visible =
+            LblDescripcion.Visible ||
+            PicFoto.Visible;
+
+
     }
 
     private static void MostrarLabel(
@@ -151,19 +186,15 @@ public partial class FormDetalleMilonga : Form
 
     private void CargarImagenDetalle()
     {
-        if (detalle is null)
+        if (detalle is null ||
+            string.IsNullOrWhiteSpace(detalle.ImagenDetalle))
         {
+            PicImagen.Image = null;
+            PicImagen.Visible = false;
             return;
         }
 
         PicImagen.Visible = true;
-
-        if (string.IsNullOrWhiteSpace(
-            detalle.ImagenDetalle))
-        {
-            PicImagen.Image = null;
-            return;
-        }
 
         PicImagen.LoadAsync(
             detalle.ImagenDetalle);
@@ -183,5 +214,50 @@ public partial class FormDetalleMilonga : Form
 
         PicFoto.LoadAsync(
             detalle.Foto);
+    }
+
+    private void ReacomodarInformacion()
+    {
+        Label[] labels =
+        {
+        LblOrganizadores,
+        LblHorario,
+        LblSalon,
+        LblDireccion,
+        LblBarrio,
+        LblClase,
+        LblDistancia,
+        LblReserva
+    };
+
+        int y = 10;
+        int espacio = 8;
+
+        foreach (Label label in labels)
+        {
+            if (!label.Visible)
+            {
+                continue;
+            }
+
+            label.AutoSize = true;
+
+            Size tamaño =
+                TextRenderer.MeasureText(
+                    label.Text,
+                    label.Font);
+
+            label.Location =
+                new Point(
+                    10,
+                    y);
+
+            y +=
+                tamaño.Height +
+                espacio;
+        }
+
+        PnlInformacion.Height =
+            y + 10;
     }
 }
