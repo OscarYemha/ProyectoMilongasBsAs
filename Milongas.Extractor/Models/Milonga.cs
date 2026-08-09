@@ -33,4 +33,8 @@ public class Milonga
     public double? DistanciaKm { get; set; }
 
     public string Tipo { get; set; } = "";
+
+    public string ModalidadEntrada { get; set; } = "";
+
+    public string EventoEspecial { get; set; } = "";
 }

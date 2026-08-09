@@ -44,8 +44,15 @@ public class HtmlExtractor
                 HorarioClase = horarioClase,
                 TieneClase =
                     !string.IsNullOrWhiteSpace(
-                        horarioClase)
+                        horarioClase),
+                ModalidadEntrada =
+                    ObtenerModalidadEntrada(tarjeta),
+
+                EventoEspecial =
+                    ObtenerEventoEspecial(tarjeta)
             };
+
+            
 
             milongas.Add(milonga);
         }
@@ -292,5 +299,50 @@ public class HtmlExtractor
             decodificado.Split(
                 [' ', '\r', '\n', '\t'],
                 StringSplitOptions.RemoveEmptyEntries));
+    }
+
+    private static string ObtenerModalidadEntrada(
+     HtmlNode tarjeta)
+    {
+        string texto =
+            LimpiarTexto(
+                tarjeta.InnerText);
+
+        if (texto.Contains(
+            "A la gorra",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return "A la gorra";
+        }
+
+        if (texto.Contains(
+            "Gratis",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return "Gratis";
+        }
+
+        return "";
+    }
+
+    private static string ObtenerEventoEspecial(
+    HtmlNode tarjeta)
+    {
+        string texto =
+            LimpiarTexto(
+                tarjeta.InnerText);
+
+        Match coincidencia =
+            Regex.Match(
+                texto,
+                @"Artística\s*(.+?)(?=\s*(?:clases|\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}|$))",
+                RegexOptions.IgnoreCase);
+
+        if (!coincidencia.Success)
+        {
+            return "";
+        }
+
+        return coincidencia.Groups[1].Value.Trim();
     }
 }

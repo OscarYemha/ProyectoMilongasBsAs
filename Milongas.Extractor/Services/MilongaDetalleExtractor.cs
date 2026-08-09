@@ -95,7 +95,10 @@ public class MilongaDetalleExtractor
                 ObtenerImagenDetalle(documento),
 
             Foto =
-                ObtenerFoto(documento)
+                ObtenerFoto(documento),
+
+            LinkMapa =
+                ObtenerLinkMapa(documento),
         };
 
         return detalle;
@@ -328,4 +331,24 @@ public class MilongaDetalleExtractor
                 "src",
                 ""));
     }
+
+    private static string ObtenerLinkMapa(
+    HtmlDocument documento)
+    {
+        HtmlNode? enlaceMapa =
+            documento.DocumentNode.SelectSingleNode(
+                "//a[contains(@href,'maps.google')]");
+
+        if (enlaceMapa is null)
+        {
+            return "";
+        }
+
+        return HtmlEntity.DeEntitize(
+            enlaceMapa.GetAttributeValue(
+                "href",
+                ""));
+    }
+
+    
 }

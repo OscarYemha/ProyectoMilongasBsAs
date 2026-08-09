@@ -47,6 +47,18 @@ public partial class MilongaCard : UserControl
             ObtenerClaseDistancia(milonga);
 
         CargarImagen(milonga);
+
+        MostrarLabel(
+    LblModalidadEntrada,
+    milonga.ModalidadEntrada);
+
+        MostrarLabel(
+            LblEventoEspecial,
+            milonga.EventoEspecial);
+
+        FlpDestacados.Visible =
+    LblModalidadEntrada.Visible ||
+    LblEventoEspecial.Visible;
     }
 
     private static string ObtenerUbicacion(
@@ -128,5 +140,22 @@ public partial class MilongaCard : UserControl
         EventArgs e)
     {
         AbrirDetalle();
+    }
+
+    private static void MostrarLabel(
+    Label label,
+    string texto)
+    {
+        bool tieneContenido =
+            !string.IsNullOrWhiteSpace(texto);
+
+        label.Visible =
+            tieneContenido;
+
+        if (tieneContenido)
+        {
+            label.Text =
+                texto;
+        }
     }
 }

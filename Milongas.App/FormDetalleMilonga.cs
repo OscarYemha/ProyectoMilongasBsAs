@@ -161,6 +161,7 @@ public partial class FormDetalleMilonga : Form
 
         CargarImagenDetalle();
         CargarFoto();
+        ConfigurarBotonMapa();
 
         FlpDescripcion.Visible =
             LblDescripcion.Visible ||
@@ -351,6 +352,56 @@ public partial class FormDetalleMilonga : Form
             MessageBox.Show(
                 ex.Message,
                 "No se pudo abrir el enlace",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+        }
+    }
+
+    private void ConfigurarBotonMapa()
+    {
+        if (detalle is null)
+        {
+            BtnComoLlego.Visible = false;
+            return;
+        }
+
+        bool tieneMapa =
+            !string.IsNullOrWhiteSpace(
+                detalle.LinkMapa);
+
+        BtnComoLlego.Visible =
+            tieneMapa;
+
+        BtnComoLlego.Tag =
+            tieneMapa
+                ? detalle.LinkMapa
+                : null;
+    }
+
+    private void BtnComoLlego_Click(
+    object? sender,
+    EventArgs e)
+    {
+        if (BtnComoLlego.Tag is not string enlace ||
+            string.IsNullOrWhiteSpace(enlace))
+        {
+            return;
+        }
+
+        try
+        {
+            System.Diagnostics.Process.Start(
+                new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = enlace,
+                    UseShellExecute = true
+                });
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                ex.Message,
+                "No se pudo abrir el mapa",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Warning);
         }

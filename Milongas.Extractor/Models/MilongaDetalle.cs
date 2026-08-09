@@ -33,4 +33,7 @@ public class MilongaDetalle
     public string SitioWeb { get; set; } = "";
 
     public string Foto { get; set; } = "";
+
+    public string LinkMapa { get; set; } = "";
+
 }

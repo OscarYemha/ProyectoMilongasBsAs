@@ -44,6 +44,7 @@
             PnlCabecera = new Panel();
             LblCargando = new Label();
             PnlInformacion = new Panel();
+            BtnComoLlego = new Button();
             FlpContactos = new FlowLayoutPanel();
             BtnFacebook = new Button();
             BtnInstagram = new Button();
@@ -178,6 +179,7 @@
             FlpDetalle.AutoScroll = true;
             FlpDetalle.Controls.Add(PnlCabecera);
             FlpDetalle.Controls.Add(LblCargando);
+            FlpDetalle.Controls.Add(BtnComoLlego);
             FlpDetalle.Controls.Add(PnlInformacion);
             FlpDetalle.Controls.Add(FlpContactos);
             FlpDetalle.Controls.Add(FlpDescripcion);
@@ -222,11 +224,21 @@
             PnlInformacion.Controls.Add(LblClase);
             PnlInformacion.Controls.Add(LblDistancia);
             PnlInformacion.Controls.Add(LblReserva);
-            PnlInformacion.Location = new Point(13, 184);
+            PnlInformacion.Location = new Point(13, 213);
             PnlInformacion.Margin = new Padding(3, 8, 3, 3);
             PnlInformacion.Name = "PnlInformacion";
             PnlInformacion.Size = new Size(57, 120);
             PnlInformacion.TabIndex = 2;
+            // 
+            // BtnComoLlego
+            // 
+            BtnComoLlego.Location = new Point(13, 179);
+            BtnComoLlego.Name = "BtnComoLlego";
+            BtnComoLlego.Size = new Size(75, 23);
+            BtnComoLlego.TabIndex = 16;
+            BtnComoLlego.Text = "¿Cómo llego?";
+            BtnComoLlego.UseVisualStyleBackColor = true;
+            BtnComoLlego.Click += BtnComoLlego_Click;
             // 
             // FlpContactos
             // 
@@ -239,7 +251,7 @@
             FlpContactos.Controls.Add(BtnTelefono);
             FlpContactos.Controls.Add(BtnYouTube);
             FlpContactos.Controls.Add(BtnSitioWeb);
-            FlpContactos.Location = new Point(13, 310);
+            FlpContactos.Location = new Point(13, 339);
             FlpContactos.Name = "FlpContactos";
             FlpContactos.Size = new Size(567, 29);
             FlpContactos.TabIndex = 15;
@@ -314,7 +326,7 @@
             FlpDescripcion.Controls.Add(LblDescripcion);
             FlpDescripcion.Controls.Add(PicFoto);
             FlpDescripcion.FlowDirection = FlowDirection.TopDown;
-            FlpDescripcion.Location = new Point(13, 345);
+            FlpDescripcion.Location = new Point(13, 374);
             FlpDescripcion.Name = "FlpDescripcion";
             FlpDescripcion.Padding = new Padding(10);
             FlpDescripcion.Size = new Size(500, 397);
@@ -393,5 +405,6 @@
         private Button BtnTelefono;
         private Button BtnYouTube;
         private Button BtnSitioWeb;
+        private Button BtnComoLlego;
     }
 }
