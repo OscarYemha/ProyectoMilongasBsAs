@@ -44,6 +44,14 @@
             PnlCabecera = new Panel();
             LblCargando = new Label();
             PnlInformacion = new Panel();
+            FlpContactos = new FlowLayoutPanel();
+            BtnFacebook = new Button();
+            BtnInstagram = new Button();
+            BtnWhatsApp = new Button();
+            BtnEmail = new Button();
+            BtnTelefono = new Button();
+            BtnYouTube = new Button();
+            BtnSitioWeb = new Button();
             FlpDescripcion = new FlowLayoutPanel();
             LblDescripcion = new Label();
             PicFoto = new PictureBox();
@@ -51,6 +59,7 @@
             FlpDetalle.SuspendLayout();
             PnlCabecera.SuspendLayout();
             PnlInformacion.SuspendLayout();
+            FlpContactos.SuspendLayout();
             FlpDescripcion.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)PicFoto).BeginInit();
             SuspendLayout();
@@ -170,6 +179,7 @@
             FlpDetalle.Controls.Add(PnlCabecera);
             FlpDetalle.Controls.Add(LblCargando);
             FlpDetalle.Controls.Add(PnlInformacion);
+            FlpDetalle.Controls.Add(FlpContactos);
             FlpDetalle.Controls.Add(FlpDescripcion);
             FlpDetalle.Dock = DockStyle.Fill;
             FlpDetalle.FlowDirection = FlowDirection.TopDown;
@@ -218,6 +228,85 @@
             PnlInformacion.Size = new Size(57, 120);
             PnlInformacion.TabIndex = 2;
             // 
+            // FlpContactos
+            // 
+            FlpContactos.AutoSize = true;
+            FlpContactos.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            FlpContactos.Controls.Add(BtnFacebook);
+            FlpContactos.Controls.Add(BtnInstagram);
+            FlpContactos.Controls.Add(BtnWhatsApp);
+            FlpContactos.Controls.Add(BtnEmail);
+            FlpContactos.Controls.Add(BtnTelefono);
+            FlpContactos.Controls.Add(BtnYouTube);
+            FlpContactos.Controls.Add(BtnSitioWeb);
+            FlpContactos.Location = new Point(13, 310);
+            FlpContactos.Name = "FlpContactos";
+            FlpContactos.Size = new Size(567, 29);
+            FlpContactos.TabIndex = 15;
+            // 
+            // BtnFacebook
+            // 
+            BtnFacebook.Location = new Point(3, 3);
+            BtnFacebook.Name = "BtnFacebook";
+            BtnFacebook.Size = new Size(75, 23);
+            BtnFacebook.TabIndex = 16;
+            BtnFacebook.Text = "Facebook";
+            BtnFacebook.UseVisualStyleBackColor = true;
+            // 
+            // BtnInstagram
+            // 
+            BtnInstagram.Location = new Point(84, 3);
+            BtnInstagram.Name = "BtnInstagram";
+            BtnInstagram.Size = new Size(75, 23);
+            BtnInstagram.TabIndex = 16;
+            BtnInstagram.Text = "Instagram";
+            BtnInstagram.UseVisualStyleBackColor = true;
+            // 
+            // BtnWhatsApp
+            // 
+            BtnWhatsApp.Location = new Point(165, 3);
+            BtnWhatsApp.Name = "BtnWhatsApp";
+            BtnWhatsApp.Size = new Size(75, 23);
+            BtnWhatsApp.TabIndex = 16;
+            BtnWhatsApp.Text = "WhatsApp";
+            BtnWhatsApp.UseVisualStyleBackColor = true;
+            // 
+            // BtnEmail
+            // 
+            BtnEmail.Location = new Point(246, 3);
+            BtnEmail.Name = "BtnEmail";
+            BtnEmail.Size = new Size(75, 23);
+            BtnEmail.TabIndex = 17;
+            BtnEmail.Text = "Email";
+            BtnEmail.UseVisualStyleBackColor = true;
+            // 
+            // BtnTelefono
+            // 
+            BtnTelefono.Location = new Point(327, 3);
+            BtnTelefono.Name = "BtnTelefono";
+            BtnTelefono.Size = new Size(75, 23);
+            BtnTelefono.TabIndex = 18;
+            BtnTelefono.Text = "Teléfono";
+            BtnTelefono.UseVisualStyleBackColor = true;
+            // 
+            // BtnYouTube
+            // 
+            BtnYouTube.Location = new Point(408, 3);
+            BtnYouTube.Name = "BtnYouTube";
+            BtnYouTube.Size = new Size(75, 23);
+            BtnYouTube.TabIndex = 19;
+            BtnYouTube.Text = "YouTube";
+            BtnYouTube.UseVisualStyleBackColor = true;
+            // 
+            // BtnSitioWeb
+            // 
+            BtnSitioWeb.Location = new Point(489, 3);
+            BtnSitioWeb.Name = "BtnSitioWeb";
+            BtnSitioWeb.Size = new Size(75, 23);
+            BtnSitioWeb.TabIndex = 20;
+            BtnSitioWeb.Text = "Sitio web";
+            BtnSitioWeb.UseVisualStyleBackColor = true;
+            // 
             // FlpDescripcion
             // 
             FlpDescripcion.AutoSize = true;
@@ -225,7 +314,7 @@
             FlpDescripcion.Controls.Add(LblDescripcion);
             FlpDescripcion.Controls.Add(PicFoto);
             FlpDescripcion.FlowDirection = FlowDirection.TopDown;
-            FlpDescripcion.Location = new Point(13, 310);
+            FlpDescripcion.Location = new Point(13, 345);
             FlpDescripcion.Name = "FlpDescripcion";
             FlpDescripcion.Padding = new Padding(10);
             FlpDescripcion.Size = new Size(500, 397);
@@ -268,6 +357,7 @@
             PnlCabecera.ResumeLayout(false);
             PnlInformacion.ResumeLayout(false);
             PnlInformacion.PerformLayout();
+            FlpContactos.ResumeLayout(false);
             FlpDescripcion.ResumeLayout(false);
             FlpDescripcion.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)PicFoto).EndInit();
@@ -295,5 +385,13 @@
         private FlowLayoutPanel FlpDescripcion;
         private Label LblDescripcion;
         private PictureBox PicFoto;
+        private FlowLayoutPanel FlpContactos;
+        private Button BtnFacebook;
+        private Button BtnInstagram;
+        private Button BtnWhatsApp;
+        private Button BtnEmail;
+        private Button BtnTelefono;
+        private Button BtnYouTube;
+        private Button BtnSitioWeb;
     }
 }

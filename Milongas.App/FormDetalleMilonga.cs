@@ -38,6 +38,7 @@ public partial class FormDetalleMilonga : Form
         PnlCabecera.Visible = false;
         PnlInformacion.Visible = false;
         FlpDescripcion.Visible = false;
+        FlpContactos.Visible = false;
 
         try
         {
@@ -49,11 +50,13 @@ public partial class FormDetalleMilonga : Form
 
             MostrarDatosBasicos();
             MostrarDetalle();
+            ConfigurarContactos();
 
             LblCargando.Visible = false;
             PnlCabecera.Visible = true;
             PnlInformacion.Visible = true;
             FlpDescripcion.Visible = true;
+            FlpContactos.Visible = true;
         }
         catch (Exception ex)
         {
@@ -259,5 +262,97 @@ public partial class FormDetalleMilonga : Form
 
         PnlInformacion.Height =
             y + 10;
+    }
+
+    private void ConfigurarContactos()
+    {
+        if (detalle is null)
+        {
+            FlpContactos.Visible = false;
+            return;
+        }
+
+        ConfigurarBotonContacto(
+            BtnFacebook,
+            detalle.Facebook);
+
+        ConfigurarBotonContacto(
+            BtnInstagram,
+            detalle.Instagram);
+
+        ConfigurarBotonContacto(
+            BtnWhatsApp,
+            detalle.WhatsApp);
+
+        ConfigurarBotonContacto(
+            BtnEmail,
+            detalle.Email);
+
+        ConfigurarBotonContacto(
+            BtnTelefono,
+            detalle.Telefono);
+
+        ConfigurarBotonContacto(
+            BtnYouTube,
+            detalle.YouTube);
+
+        ConfigurarBotonContacto(
+            BtnSitioWeb,
+            detalle.SitioWeb);
+
+        FlpContactos.Visible =
+            BtnFacebook.Visible ||
+            BtnInstagram.Visible ||
+            BtnWhatsApp.Visible ||
+            BtnEmail.Visible ||
+            BtnTelefono.Visible ||
+            BtnYouTube.Visible ||
+            BtnSitioWeb.Visible;
+    }
+
+    private static void ConfigurarBotonContacto(
+    Button boton,
+    string enlace)
+    {
+        bool tieneEnlace =
+            !string.IsNullOrWhiteSpace(enlace);
+
+        boton.Visible =
+            tieneEnlace;
+
+        boton.Tag =
+            tieneEnlace
+                ? enlace
+                : null;
+    }
+
+    private void BtnContacto_Click(
+    object? sender,
+    EventArgs e)
+    {
+        if (sender is not Button boton ||
+            boton.Tag is not string enlace ||
+            string.IsNullOrWhiteSpace(enlace))
+        {
+            return;
+        }
+
+        try
+        {
+            System.Diagnostics.Process.Start(
+                new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = enlace,
+                    UseShellExecute = true
+                });
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                ex.Message,
+                "No se pudo abrir el enlace",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+        }
     }
 }
