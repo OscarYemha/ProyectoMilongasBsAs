@@ -157,16 +157,16 @@ public partial class FormDetalleMilonga : Form
             LblDescripcion,
             detalle.Descripcion);
 
-        ReacomodarInformacion();
 
         CargarImagenDetalle();
         CargarFoto();
         ConfigurarBotonMapa();
 
         FlpDescripcion.Visible =
-            LblDescripcion.Visible ||
-            PicFoto.Visible;
+     !string.IsNullOrWhiteSpace(detalle.Descripcion) ||
+     !string.IsNullOrWhiteSpace(detalle.Foto);
 
+        ReacomodarInformacion();
 
     }
 
@@ -222,12 +222,13 @@ public partial class FormDetalleMilonga : Form
 
     private void ReacomodarInformacion()
     {
-        Label[] labels =
+        Control[] controles =
         {
         LblOrganizadores,
         LblHorario,
         LblSalon,
         LblDireccion,
+        BtnComoLlego,
         LblBarrio,
         LblClase,
         LblDistancia,
@@ -237,27 +238,20 @@ public partial class FormDetalleMilonga : Form
         int y = 10;
         int espacio = 8;
 
-        foreach (Label label in labels)
+        foreach (Control control in controles)
         {
-            if (!label.Visible)
+            if (!control.Visible)
             {
                 continue;
             }
 
-            label.AutoSize = true;
-
-            Size tamaño =
-                TextRenderer.MeasureText(
-                    label.Text,
-                    label.Font);
-
-            label.Location =
+            control.Location =
                 new Point(
                     10,
                     y);
 
             y +=
-                tamaño.Height +
+                control.Height +
                 espacio;
         }
 

@@ -110,6 +110,7 @@
             LblOrganizadores.Size = new Size(38, 15);
             LblOrganizadores.TabIndex = 4;
             LblOrganizadores.Text = "label4";
+            LblOrganizadores.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // LblHorario
             // 
@@ -119,6 +120,7 @@
             LblHorario.Size = new Size(38, 15);
             LblHorario.TabIndex = 5;
             LblHorario.Text = "label5";
+            LblHorario.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // LblSalon
             // 
@@ -128,6 +130,7 @@
             LblSalon.Size = new Size(38, 15);
             LblSalon.TabIndex = 6;
             LblSalon.Text = "label6";
+            LblSalon.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // LblDireccion
             // 
@@ -137,49 +140,53 @@
             LblDireccion.Size = new Size(38, 15);
             LblDireccion.TabIndex = 7;
             LblDireccion.Text = "label7";
+            LblDireccion.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // LblBarrio
             // 
             LblBarrio.AutoSize = true;
-            LblBarrio.Location = new Point(10, 60);
+            LblBarrio.Location = new Point(10, 87);
             LblBarrio.Name = "LblBarrio";
             LblBarrio.Size = new Size(38, 15);
             LblBarrio.TabIndex = 8;
             LblBarrio.Text = "label8";
+            LblBarrio.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // LblClase
             // 
             LblClase.AutoSize = true;
-            LblClase.Location = new Point(10, 75);
+            LblClase.Location = new Point(10, 102);
             LblClase.Name = "LblClase";
             LblClase.Size = new Size(38, 15);
             LblClase.TabIndex = 9;
             LblClase.Text = "label9";
+            LblClase.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // LblDistancia
             // 
             LblDistancia.AutoSize = true;
-            LblDistancia.Location = new Point(10, 90);
+            LblDistancia.Location = new Point(10, 117);
             LblDistancia.Name = "LblDistancia";
             LblDistancia.Size = new Size(44, 15);
             LblDistancia.TabIndex = 10;
             LblDistancia.Text = "label10";
+            LblDistancia.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // LblReserva
             // 
             LblReserva.AutoSize = true;
-            LblReserva.Location = new Point(10, 105);
+            LblReserva.Location = new Point(10, 132);
             LblReserva.Name = "LblReserva";
             LblReserva.Size = new Size(44, 15);
             LblReserva.TabIndex = 11;
             LblReserva.Text = "label11";
+            LblReserva.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // FlpDetalle
             // 
             FlpDetalle.AutoScroll = true;
             FlpDetalle.Controls.Add(PnlCabecera);
             FlpDetalle.Controls.Add(LblCargando);
-            FlpDetalle.Controls.Add(BtnComoLlego);
             FlpDetalle.Controls.Add(PnlInformacion);
             FlpDetalle.Controls.Add(FlpContactos);
             FlpDetalle.Controls.Add(FlpDescripcion);
@@ -188,7 +195,7 @@
             FlpDetalle.Location = new Point(0, 0);
             FlpDetalle.Name = "FlpDetalle";
             FlpDetalle.Padding = new Padding(10);
-            FlpDetalle.Size = new Size(800, 763);
+            FlpDetalle.Size = new Size(800, 749);
             FlpDetalle.TabIndex = 14;
             FlpDetalle.WrapContents = false;
             // 
@@ -220,23 +227,26 @@
             PnlInformacion.Controls.Add(LblHorario);
             PnlInformacion.Controls.Add(LblSalon);
             PnlInformacion.Controls.Add(LblDireccion);
+            PnlInformacion.Controls.Add(BtnComoLlego);
             PnlInformacion.Controls.Add(LblBarrio);
             PnlInformacion.Controls.Add(LblClase);
             PnlInformacion.Controls.Add(LblDistancia);
             PnlInformacion.Controls.Add(LblReserva);
-            PnlInformacion.Location = new Point(13, 213);
+            PnlInformacion.Location = new Point(13, 184);
             PnlInformacion.Margin = new Padding(3, 8, 3, 3);
             PnlInformacion.Name = "PnlInformacion";
-            PnlInformacion.Size = new Size(57, 120);
+            PnlInformacion.Size = new Size(102, 147);
             PnlInformacion.TabIndex = 2;
             // 
             // BtnComoLlego
             // 
-            BtnComoLlego.Location = new Point(13, 179);
+            BtnComoLlego.AutoSize = true;
+            BtnComoLlego.Location = new Point(10, 59);
             BtnComoLlego.Name = "BtnComoLlego";
-            BtnComoLlego.Size = new Size(75, 23);
+            BtnComoLlego.Size = new Size(89, 25);
             BtnComoLlego.TabIndex = 16;
             BtnComoLlego.Text = "¿Cómo llego?";
+            BtnComoLlego.TextAlign = ContentAlignment.MiddleLeft;
             BtnComoLlego.UseVisualStyleBackColor = true;
             BtnComoLlego.Click += BtnComoLlego_Click;
             // 
@@ -251,7 +261,7 @@
             FlpContactos.Controls.Add(BtnTelefono);
             FlpContactos.Controls.Add(BtnYouTube);
             FlpContactos.Controls.Add(BtnSitioWeb);
-            FlpContactos.Location = new Point(13, 339);
+            FlpContactos.Location = new Point(13, 337);
             FlpContactos.Name = "FlpContactos";
             FlpContactos.Size = new Size(567, 29);
             FlpContactos.TabIndex = 15;
@@ -326,7 +336,7 @@
             FlpDescripcion.Controls.Add(LblDescripcion);
             FlpDescripcion.Controls.Add(PicFoto);
             FlpDescripcion.FlowDirection = FlowDirection.TopDown;
-            FlpDescripcion.Location = new Point(13, 374);
+            FlpDescripcion.Location = new Point(13, 372);
             FlpDescripcion.Name = "FlpDescripcion";
             FlpDescripcion.Padding = new Padding(10);
             FlpDescripcion.Size = new Size(500, 397);
@@ -359,7 +369,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 763);
+            ClientSize = new Size(800, 749);
             Controls.Add(FlpDetalle);
             Name = "FormDetalleMilonga";
             Text = "FormDetalleMilonga";
