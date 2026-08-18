@@ -24,7 +24,7 @@ public class BrowserService : IAsyncDisposable
             await playwright.Chromium.LaunchAsync(
                 new BrowserTypeLaunchOptions
                 {
-                    Headless = false
+                    Headless = true
                 });
 
         pagina =
@@ -123,9 +123,6 @@ public class BrowserService : IAsyncDisposable
             await boton.EvaluateAsync(
                 "elemento => elemento.click()");
 
-            await paginaActual.WaitForTimeoutAsync(
-                800);
-
             await paginaActual.WaitForSelectorAsync(
                 "a.event-list-item",
                 new PageWaitForSelectorOptions
@@ -160,9 +157,6 @@ public class BrowserService : IAsyncDisposable
             {
                 WaitUntil = WaitUntilState.DOMContentLoaded
             });
-
-        await paginaActual.WaitForTimeoutAsync(
-            1000);
 
         return await paginaActual.ContentAsync();
     }
