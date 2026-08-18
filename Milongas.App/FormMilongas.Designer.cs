@@ -31,7 +31,6 @@
             BtnCargar = new Button();
             CmbFecha = new ComboBox();
             TxtBuscar = new TextBox();
-            DgvMilongas = new DataGridView();
             CmbOrden = new ComboBox();
             label1 = new Label();
             CmbBarrio = new ComboBox();
@@ -39,7 +38,6 @@
             label3 = new Label();
             CmbClase = new ComboBox();
             FlpMilongas = new FlowLayoutPanel();
-            ((System.ComponentModel.ISupportInitialize)DgvMilongas).BeginInit();
             SuspendLayout();
             // 
             // BtnCargar
@@ -68,14 +66,6 @@
             TxtBuscar.Size = new Size(387, 23);
             TxtBuscar.TabIndex = 2;
             TxtBuscar.TextChanged += TxtBuscar_TextChanged;
-            // 
-            // DgvMilongas
-            // 
-            DgvMilongas.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            DgvMilongas.Location = new Point(58, 285);
-            DgvMilongas.Name = "DgvMilongas";
-            DgvMilongas.Size = new Size(387, 151);
-            DgvMilongas.TabIndex = 3;
             // 
             // CmbOrden
             // 
@@ -133,9 +123,10 @@
             // 
             // FlpMilongas
             // 
+            FlpMilongas.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             FlpMilongas.AutoScroll = true;
             FlpMilongas.FlowDirection = FlowDirection.TopDown;
-            FlpMilongas.Location = new Point(58, 460);
+            FlpMilongas.Location = new Point(58, 282);
             FlpMilongas.Name = "FlpMilongas";
             FlpMilongas.Size = new Size(496, 432);
             FlpMilongas.TabIndex = 10;
@@ -153,13 +144,11 @@
             Controls.Add(CmbBarrio);
             Controls.Add(label1);
             Controls.Add(CmbOrden);
-            Controls.Add(DgvMilongas);
             Controls.Add(TxtBuscar);
             Controls.Add(CmbFecha);
             Controls.Add(BtnCargar);
             Name = "FormMilongas";
             Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)DgvMilongas).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -169,7 +158,6 @@
         private Button BtnCargar;
         private ComboBox CmbFecha;
         private TextBox TxtBuscar;
-        private DataGridView DgvMilongas;
         private ComboBox CmbOrden;
         private Label label1;
         private ComboBox CmbBarrio;

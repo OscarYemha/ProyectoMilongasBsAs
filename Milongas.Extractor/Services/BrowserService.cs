@@ -158,6 +158,8 @@ public class BrowserService : IAsyncDisposable
                 WaitUntil = WaitUntilState.DOMContentLoaded
             });
 
+        await paginaActual.WaitForTimeoutAsync(1000);
+
         return await paginaActual.ContentAsync();
     }
 

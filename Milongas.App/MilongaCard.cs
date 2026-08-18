@@ -31,6 +31,51 @@ public partial class MilongaCard : UserControl
     {
         this.milonga = milonga;
 
+        if (milonga.Cancelada)
+        {
+            LblTipo.Text =
+                milonga.Tipo.ToUpper();
+
+            LblNombre.Text =
+                milonga.Nombre;
+
+            LblCancelada.Visible =
+                true;
+
+            LblHorario.Visible =
+                false;
+
+            LblUbicacion.Visible =
+                false;
+
+            LblClaseDistancia.Visible =
+                false;
+
+            FlpDestacados.Visible =
+                false;
+
+            PicImagen.Visible = 
+                false;
+
+            CargarImagen(milonga);
+
+            AjustarLayoutCancelada();
+
+            return;
+        }
+
+        LblCancelada.Visible = 
+            false;
+
+        LblHorario.Visible =
+            true;
+
+        LblUbicacion.Visible =
+            true;
+
+        LblClaseDistancia.Visible =
+            true;
+
         LblTipo.Text =
             milonga.Tipo.ToUpper();
 
@@ -59,6 +104,8 @@ public partial class MilongaCard : UserControl
         FlpDestacados.Visible =
     LblModalidadEntrada.Visible ||
     LblEventoEspecial.Visible;
+
+        AjustarLayoutNormal();
     }
 
     private static string ObtenerUbicacion(
@@ -156,6 +203,93 @@ public partial class MilongaCard : UserControl
         {
             label.Text =
                 texto;
+        }
+    }
+
+    private void AjustarLayoutCancelada()
+    {
+        Height = 85;
+
+        PicImagen.Visible = false;
+
+        int separacion = 3;
+
+        int altoContenido =
+            LblTipo.Height +
+            separacion +
+            LblNombre.Height;
+
+        int yInicial =
+            (ClientSize.Height - altoContenido) / 2;
+
+        LblTipo.Location =
+            new Point(20, yInicial);
+
+        LblNombre.Location =
+            new Point(
+                20,
+                yInicial +
+                LblTipo.Height +
+                separacion);
+
+        LblCancelada.Location =
+            new Point(
+                ClientSize.Width -
+                LblCancelada.Width -
+                25,
+                (ClientSize.Height -
+                 LblCancelada.Height) / 2);
+    }
+
+    private void AjustarLayoutNormal()
+    {
+        Height = 130;
+
+        PicImagen.Visible = true;
+
+        PicImagen.Location =
+            new Point(
+                10,
+                (ClientSize.Height -
+                 PicImagen.Height) / 2);
+
+        Control[] controles =
+        {
+        LblTipo,
+        LblNombre,
+        LblHorario,
+        LblUbicacion,
+        LblClaseDistancia,
+        FlpDestacados
+    };
+
+        List<Control> visibles =
+            controles
+                .Where(control => control.Visible)
+                .ToList();
+
+        const int separacion = 3;
+
+        int altoContenido =
+            visibles.Sum(control => control.Height) +
+            separacion * Math.Max(
+                0,
+                visibles.Count - 1);
+
+        int y =
+            (ClientSize.Height -
+             altoContenido) / 2;
+
+        foreach (Control control in visibles)
+        {
+            control.Location =
+                new Point(
+                    100,
+                    y);
+
+            y +=
+                control.Height +
+                separacion;
         }
     }
 }

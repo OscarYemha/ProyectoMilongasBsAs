@@ -39,14 +39,12 @@ public partial class FormMilongas : Form
         distanciaService =
             new DistanciaService();
 
-        ConfigurarTabla();
+        
         ConfigurarOrden();
         ConfigurarClase();
 
         HabilitarControlesAgenda(false);
 
-        DgvMilongas.CellFormatting +=
-            DgvMilongas_CellFormatting;
 
         FormClosed +=
             Form1_FormClosed;
@@ -284,7 +282,7 @@ public partial class FormMilongas : Form
             Fecha = fecha,
             Texto = texto,
             Barrio = barrioSeleccionado,
-            Cancelada = false,
+            Cancelada = null,
             TieneClase = tieneClase
         };
 
@@ -387,8 +385,6 @@ public partial class FormMilongas : Form
     private void ActualizarTabla(
      List<Milonga> milongas)
     {
-        DgvMilongas.DataSource = null;
-        DgvMilongas.DataSource = milongas;
 
         FlpMilongas.Controls.Clear();
 
@@ -406,86 +402,6 @@ public partial class FormMilongas : Form
 
             FlpMilongas.Controls.Add(
                 card);
-        }
-    }
-
-    private void ConfigurarTabla()
-    {
-        DgvMilongas.AutoGenerateColumns = false;
-        DgvMilongas.Columns.Clear();
-
-        DgvMilongas.Columns.Add(
-            new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Horario",
-                DataPropertyName = "Horario",
-                Width = 110
-            });
-
-        DgvMilongas.Columns.Add(
-            new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Milonga",
-                DataPropertyName = "Nombre",
-                Width = 220
-            });
-
-        DgvMilongas.Columns.Add(
-            new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Salón",
-                DataPropertyName = "Salon",
-                Width = 200
-            });
-
-        DgvMilongas.Columns.Add(
-            new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Barrio",
-                DataPropertyName = "Barrio",
-                Width = 130
-            });
-
-        DgvMilongas.Columns.Add(
-            new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Distancia",
-                DataPropertyName = "DistanciaKm",
-                Width = 90,
-                DefaultCellStyle =
-                    new DataGridViewCellStyle
-                    {
-                        Format = "0.0 'km'"
-                    }
-            });
-
-        DgvMilongas.Columns.Add(
-            new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Clase",
-                DataPropertyName = "HorarioClase",
-                Width = 120
-            });
-    }
-
-    private void DgvMilongas_CellFormatting(
-        object? sender,
-        DataGridViewCellFormattingEventArgs e)
-    {
-        DataGridViewColumn columna =
-            DgvMilongas.Columns[e.ColumnIndex];
-
-        if (columna.DataPropertyName != "HorarioClase")
-        {
-            return;
-        }
-
-        if (e.Value is null ||
-            string.IsNullOrWhiteSpace(
-                e.Value.ToString()))
-        {
-            e.Value = "Sin clase";
-            e.FormattingApplied = true;
         }
     }
 

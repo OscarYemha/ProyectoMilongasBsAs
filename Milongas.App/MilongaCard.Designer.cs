@@ -36,6 +36,7 @@
             LblClaseDistancia = new Label();
             LblModalidadEntrada = new Label();
             LblEventoEspecial = new Label();
+            LblCancelada = new Label();
             FlpDestacados = new FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)PicImagen).BeginInit();
             FlpDestacados.SuspendLayout();
@@ -53,25 +54,26 @@
             // LblTipo
             // 
             LblTipo.AutoSize = true;
+            LblTipo.Font = new Font("Segoe UI", 8F);
+            LblTipo.ForeColor = Color.DimGray;
             LblTipo.Location = new Point(96, 12);
             LblTipo.Name = "LblTipo";
-            LblTipo.Size = new Size(38, 15);
-            LblTipo.TabIndex = 1;
-            LblTipo.Text = "label1";
+            LblTipo.Size = new Size(0, 13);
+            LblTipo.TabIndex = 7;
             // 
             // LblNombre
             // 
             LblNombre.AutoSize = true;
-            LblNombre.Location = new Point(96, 27);
+            LblNombre.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            LblNombre.Location = new Point(96, 16);
             LblNombre.Name = "LblNombre";
-            LblNombre.Size = new Size(38, 15);
-            LblNombre.TabIndex = 2;
-            LblNombre.Text = "label2";
+            LblNombre.Size = new Size(0, 21);
+            LblNombre.TabIndex = 6;
             // 
             // LblHorario
             // 
             LblHorario.AutoSize = true;
-            LblHorario.Location = new Point(96, 42);
+            LblHorario.Location = new Point(96, 28);
             LblHorario.Name = "LblHorario";
             LblHorario.Size = new Size(38, 15);
             LblHorario.TabIndex = 3;
@@ -80,7 +82,7 @@
             // LblUbicacion
             // 
             LblUbicacion.AutoSize = true;
-            LblUbicacion.Location = new Point(96, 57);
+            LblUbicacion.Location = new Point(96, 43);
             LblUbicacion.Name = "LblUbicacion";
             LblUbicacion.Size = new Size(38, 15);
             LblUbicacion.TabIndex = 4;
@@ -89,7 +91,7 @@
             // LblClaseDistancia
             // 
             LblClaseDistancia.AutoSize = true;
-            LblClaseDistancia.Location = new Point(96, 72);
+            LblClaseDistancia.Location = new Point(96, 58);
             LblClaseDistancia.Name = "LblClaseDistancia";
             LblClaseDistancia.Size = new Size(38, 15);
             LblClaseDistancia.TabIndex = 5;
@@ -113,6 +115,20 @@
             LblEventoEspecial.TabIndex = 7;
             LblEventoEspecial.Text = "label2";
             // 
+            // LblCancelada
+            // 
+            LblCancelada.AutoSize = true;
+            LblCancelada.BackColor = Color.Firebrick;
+            LblCancelada.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            LblCancelada.ForeColor = Color.White;
+            LblCancelada.Location = new Point(300, 22);
+            LblCancelada.Name = "LblCancelada";
+            LblCancelada.Padding = new Padding(6, 3, 6, 3);
+            LblCancelada.Size = new Size(88, 21);
+            LblCancelada.TabIndex = 9;
+            LblCancelada.Text = "CANCELADO";
+            LblCancelada.Visible = false;
+            // 
             // FlpDestacados
             // 
             FlpDestacados.AutoSize = true;
@@ -120,7 +136,7 @@
             FlpDestacados.Controls.Add(LblModalidadEntrada);
             FlpDestacados.Controls.Add(LblEventoEspecial);
             FlpDestacados.FlowDirection = FlowDirection.TopDown;
-            FlpDestacados.Location = new Point(96, 87);
+            FlpDestacados.Location = new Point(96, 73);
             FlpDestacados.Name = "FlpDestacados";
             FlpDestacados.Size = new Size(44, 30);
             FlpDestacados.TabIndex = 8;
@@ -138,6 +154,7 @@
             Controls.Add(LblTipo);
             Controls.Add(PicImagen);
             Controls.Add(FlpDestacados);
+            Controls.Add(LblCancelada);
             Name = "MilongaCard";
             Size = new Size(420, 125);
             ((System.ComponentModel.ISupportInitialize)PicImagen).EndInit();
@@ -157,6 +174,7 @@
         private Label LblClaseDistancia;
         private Label LblModalidadEntrada;
         private Label LblEventoEspecial;
+        private Label LblCancelada;
         private FlowLayoutPanel FlpDestacados;
     }
 }
