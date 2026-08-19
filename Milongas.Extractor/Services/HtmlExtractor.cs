@@ -41,6 +41,9 @@ public class HtmlExtractor
                 Imagen = ObtenerImagen(tarjeta),
                 Link = link,
                 Cancelada = EstaCancelada(tarjeta),
+                Destacada = EstaDestacada(tarjeta),
+                Finalizada = EstaFinalizada(tarjeta),
+                Abierta = EstaAbierta(tarjeta),
                 HorarioClase = horarioClase,
                 TieneClase =
                     !string.IsNullOrWhiteSpace(
@@ -239,17 +242,6 @@ public class HtmlExtractor
                 : 0;
     }
 
-    private static bool EstaCancelada(
-        HtmlNode tarjeta)
-    {
-        string texto =
-            LimpiarTexto(
-                tarjeta.InnerText);
-
-        return texto.Contains(
-            "CANCELADO",
-            StringComparison.OrdinalIgnoreCase);
-    }
 
     private static string ObtenerHorarioClase(
         HtmlNode tarjeta)
@@ -344,5 +336,51 @@ public class HtmlExtractor
         }
 
         return coincidencia.Groups[1].Value.Trim();
+    }
+
+    private static bool EstaDestacada(
+    HtmlNode tarjeta)
+    {
+        return tarjeta
+            .GetClasses()
+            .Any(clase =>
+                clase.Equals(
+                    "highlighted-wrapper",
+                    StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool EstaFinalizada(
+    HtmlNode tarjeta)
+    {
+        string texto =
+            LimpiarTexto(
+                tarjeta.InnerText);
+
+        return texto.Contains(
+            "FINALIZÓ",
+            StringComparison.OrdinalIgnoreCase);
+    }
+    private static bool EstaCancelada(
+        HtmlNode tarjeta)
+    {
+        string texto =
+            LimpiarTexto(
+                tarjeta.InnerText);
+
+        return texto.Contains(
+            "CANCELADO",
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool EstaAbierta(
+    HtmlNode tarjeta)
+    {
+        string texto =
+            LimpiarTexto(
+                tarjeta.InnerText);
+
+        return texto.Contains(
+            "Abierto",
+            StringComparison.OrdinalIgnoreCase);
     }
 }

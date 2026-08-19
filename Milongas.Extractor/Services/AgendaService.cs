@@ -114,13 +114,42 @@ public class AgendaService
     }
 
     private static List<Milonga> OrdenarPorHorario(
-        List<Milonga> milongas)
+    List<Milonga> milongas)
     {
         return milongas
             .OrderBy(
                 milonga =>
+                    ObtenerPrioridad(milonga))
+            .ThenBy(
+                milonga =>
                     ObtenerHoraInicio(milonga.Horario))
             .ToList();
+    }
+
+    private static int ObtenerPrioridad(
+    Milonga milonga)
+    {
+        if (milonga.Destacada)
+        {
+            return 0;
+        }
+
+        if (milonga.Cancelada)
+        {
+            return 1;
+        }
+
+        if (milonga.Abierta)
+        {
+            return 2;
+        }
+
+        if (milonga.Finalizada)
+        {
+            return 3;
+        }
+
+        return 2;
     }
 
     private static TimeOnly ObtenerHoraInicio(

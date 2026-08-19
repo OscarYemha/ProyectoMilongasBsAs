@@ -18,6 +18,14 @@ public class Milonga
 
     public bool Cancelada { get; set; }
 
+    public bool Destacada { get; set; }
+
+    public bool Verificada { get; set; }
+
+    public bool Finalizada { get; set; }
+
+    public bool Abierta { get; set; }
+
     public DateOnly Fecha { get; set; }
 
     public bool TieneClase { get; set; }

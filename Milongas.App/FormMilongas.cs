@@ -48,6 +48,9 @@ public partial class FormMilongas : Form
 
         FormClosed +=
             Form1_FormClosed;
+
+        FlpMilongas.Resize +=
+            (_, _) => AjustarAnchoTarjetas();
     }
 
     private async void BtnCargar_Click(
@@ -293,11 +296,9 @@ public partial class FormMilongas : Form
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        // Mostramos primero los datos básicos.
-        ActualizarTabla(resultado);
-
         if (resultado.Count == 0)
         {
+            ActualizarTabla(resultado);
             return;
         }
 
@@ -391,17 +392,31 @@ public partial class FormMilongas : Form
         foreach (Milonga milonga in milongas)
         {
             MilongaCard card =
-     new MilongaCard(
-         ObtenerDetalleSeguroAsync);
+                new MilongaCard(
+                    ObtenerDetalleSeguroAsync);
 
             card.CargarMilonga(
                 milonga);
 
-            card.Width =
-                FlpMilongas.ClientSize.Width - 25;
-
             FlpMilongas.Controls.Add(
                 card);
+        }
+
+        BeginInvoke(
+            AjustarAnchoTarjetas);
+    }
+
+    private void AjustarAnchoTarjetas()
+    {
+        int anchoDisponible =
+            FlpMilongas.ClientSize.Width - 10;
+
+        foreach (Control control in
+            FlpMilongas.Controls)
+        {
+            control.Width =
+                anchoDisponible -
+                control.Margin.Horizontal;
         }
     }
 

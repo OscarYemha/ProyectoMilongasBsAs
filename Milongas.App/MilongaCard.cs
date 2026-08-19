@@ -8,6 +8,10 @@ public partial class MilongaCard : UserControl
         obtenerDetalleAsync;
 
     private Milonga? milonga;
+    private Color colorBorde =
+    Color.FromArgb(225, 225, 225);
+
+    private int grosorBorde = 1;
 
     public MilongaCard(
         Func<Milonga, Task<MilongaDetalle>> obtenerDetalleAsync)
@@ -17,6 +21,11 @@ public partial class MilongaCard : UserControl
         this.obtenerDetalleAsync =
             obtenerDetalleAsync;
 
+        DoubleBuffered = true;
+        ResizeRedraw = true;
+
+
+
         Click += MilongaCard_Click;
         PicImagen.Click += MilongaCard_Click;
         LblTipo.Click += MilongaCard_Click;
@@ -24,12 +33,133 @@ public partial class MilongaCard : UserControl
         LblHorario.Click += MilongaCard_Click;
         LblUbicacion.Click += MilongaCard_Click;
         LblClaseDistancia.Click += MilongaCard_Click;
+
+
+    }
+
+    protected override void OnPaint(
+    PaintEventArgs e)
+    {
+        base.OnPaint(e);
+
+        using Pen pen = new(
+            colorBorde,
+            grosorBorde);
+
+        Rectangle rectangulo =
+            ClientRectangle;
+
+        rectangulo.Width -= 1;
+        rectangulo.Height -= 1;
+
+        e.Graphics.DrawRectangle(
+            pen,
+            rectangulo);
+    }
+
+    private void AplicarEstilo(
+    Milonga milonga)
+    {
+        if (milonga.Destacada)
+        {
+            BackColor =
+                Color.FromArgb(
+                    255,
+                    244,
+                    204);
+
+            colorBorde =
+                Color.FromArgb(
+                    210,
+                    170,
+                    70);
+
+            grosorBorde = 2;
+        }
+        else if (milonga.Finalizada)
+        {
+            BackColor =
+                Color.FromArgb(
+                    238,
+                    238,
+                    238);
+
+            colorBorde =
+                Color.FromArgb(
+                    205,
+                    205,
+                    205);
+
+            grosorBorde = 1;
+        }
+        else
+        {
+            BackColor =
+                Color.FromArgb(
+                    250,
+                    250,
+                    250);
+
+            colorBorde =
+                Color.FromArgb(
+                    225,
+                    225,
+                    225);
+
+            grosorBorde = 1;
+        }
+
+        Invalidate();
+    }
+
+    private void ConfigurarEstado(
+    Milonga milonga)
+    {
+        LblEstado.Visible = false;
+
+        if (milonga.Finalizada)
+        {
+            LblEstado.Text = "Finalizó";
+
+            LblEstado.ForeColor =
+                Color.Firebrick;
+
+            LblEstado.BackColor =
+                Color.FromArgb(
+                    255,
+                    240,
+                    240);
+
+            LblEstado.Visible = true;
+
+            return;
+        }
+
+        if (milonga.Abierta)
+        {
+            LblEstado.Text = "Abierto";
+
+            LblEstado.ForeColor =
+                Color.SeaGreen;
+
+            LblEstado.BackColor =
+                Color.FromArgb(
+                    232,
+                    250,
+                    242);
+
+            LblEstado.Visible = true;
+        }
     }
 
     public void CargarMilonga(
         Milonga milonga)
     {
         this.milonga = milonga;
+
+        AplicarEstilo(milonga);
+        ConfigurarEstado(milonga);
+
 
         if (milonga.Cancelada)
         {
@@ -145,13 +275,16 @@ public partial class MilongaCard : UserControl
     }
 
     private void CargarImagen(
-        Milonga milonga)
+    Milonga milonga)
     {
         if (string.IsNullOrWhiteSpace(milonga.Imagen))
         {
             PicImagen.Image = null;
+            PicImagen.Visible = false;
             return;
         }
+
+        PicImagen.Visible = true;
 
         string urlImagen =
             milonga.Imagen;
@@ -245,13 +378,14 @@ public partial class MilongaCard : UserControl
     {
         Height = 130;
 
-        PicImagen.Visible = true;
-
-        PicImagen.Location =
-            new Point(
-                10,
-                (ClientSize.Height -
-                 PicImagen.Height) / 2);
+        if (PicImagen.Visible)
+        {
+            PicImagen.Location =
+                new Point(
+                    10,
+                    (ClientSize.Height -
+                     PicImagen.Height) / 2);
+        }
 
         Control[] controles =
         {
@@ -282,14 +416,34 @@ public partial class MilongaCard : UserControl
 
         foreach (Control control in visibles)
         {
+            int xContenido =
+                PicImagen.Visible
+                    ? 100
+                    : 20;
+
             control.Location =
                 new Point(
-                    100,
+                    xContenido,
                     y);
 
             y +=
                 control.Height +
                 separacion;
+        }
+
+        if (LblEstado.Visible)
+        {
+            LblEstado.Location =
+                new Point(
+                    LblHorario.Left,
+                    LblHorario.Top +
+                    (LblHorario.Height -
+                     LblEstado.Height) / 2);
+
+            LblHorario.Location =
+                new Point(
+                    LblEstado.Right + 6,
+                    LblHorario.Top);
         }
     }
 }

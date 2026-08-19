@@ -37,6 +37,7 @@
             LblModalidadEntrada = new Label();
             LblEventoEspecial = new Label();
             LblCancelada = new Label();
+            LblEstado = new Label();
             FlpDestacados = new FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)PicImagen).BeginInit();
             FlpDestacados.SuspendLayout();
@@ -129,6 +130,17 @@
             LblCancelada.Text = "CANCELADO";
             LblCancelada.Visible = false;
             // 
+            // LblEstado
+            // 
+            LblEstado.AutoSize = true;
+            LblEstado.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
+            LblEstado.Location = new Point(96, 53);
+            LblEstado.Name = "LblEstado";
+            LblEstado.Padding = new Padding(5, 2, 5, 2);
+            LblEstado.Size = new Size(10, 17);
+            LblEstado.TabIndex = 10;
+            LblEstado.Visible = false;
+            // 
             // FlpDestacados
             // 
             FlpDestacados.AutoSize = true;
@@ -146,7 +158,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(255, 224, 192);
+            BackColor = Color.White;
             Controls.Add(LblClaseDistancia);
             Controls.Add(LblUbicacion);
             Controls.Add(LblHorario);
@@ -155,6 +167,7 @@
             Controls.Add(PicImagen);
             Controls.Add(FlpDestacados);
             Controls.Add(LblCancelada);
+            Controls.Add(LblEstado);
             Name = "MilongaCard";
             Size = new Size(420, 125);
             ((System.ComponentModel.ISupportInitialize)PicImagen).EndInit();
@@ -175,6 +188,7 @@
         private Label LblModalidadEntrada;
         private Label LblEventoEspecial;
         private Label LblCancelada;
+        private Label LblEstado;
         private FlowLayoutPanel FlpDestacados;
     }
 }

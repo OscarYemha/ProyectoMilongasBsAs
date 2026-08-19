@@ -158,7 +158,13 @@ public class BrowserService : IAsyncDisposable
                 WaitUntil = WaitUntilState.DOMContentLoaded
             });
 
-        await paginaActual.WaitForTimeoutAsync(1000);
+        await paginaActual.WaitForSelectorAsync(
+    ".grid-title",
+    new PageWaitForSelectorOptions
+    {
+        State = WaitForSelectorState.Visible,
+        Timeout = 30_000
+    });
 
         return await paginaActual.ContentAsync();
     }
