@@ -1,6 +1,7 @@
 using Microsoft.Playwright;
 using Milongas.Extractor.Models;
 using Milongas.Extractor.Services;
+using System.Diagnostics;
 
 namespace Milongas.App;
 
@@ -18,10 +19,13 @@ public partial class FormMilongas : Form
     private CancellationTokenSource? filtroCancellationTokenSource;
 
     private List<Milonga> agenda = new();
+    private DateOnly? fechaActivaWeb;
+    private readonly HashSet<Milonga> milongasConDetalleCargado = new();
 
     private bool actualizandoFechas;
     private bool actualizandoFiltros;
     private bool agendaCargada;
+    private bool actualizandoInterfaz;
 
     private const string Url =
         "https://www.hoy-milonga.com/buenos-aires/es/milongas";
@@ -54,50 +58,90 @@ public partial class FormMilongas : Form
     }
 
     private async void BtnCargar_Click(
-        object sender,
-        EventArgs e)
+     object sender,
+     EventArgs e)
     {
         filtroCancellationTokenSource?.Cancel();
 
-        BtnCargar.Enabled = false;
-        BtnCargar.Text = "Cargando...";
+        LblCargando.Text =
+            "Cargando milongas...";
 
-        HabilitarControlesAgenda(false);
+        LblCargando.Visible =
+            true;
+
+        FlpMilongas.Visible =
+            false;
+
+        BtnCargar.Enabled =
+            false;
+
+        BtnCargar.Text =
+            "Cargando...";
+
+        HabilitarControlesAgenda(
+            false);
+
+        agenda =
+            new List<Milonga>();
+
+        agendaCargada =
+            false;
+
+        fechaActivaWeb =
+            null;
+
+        bool primerDiaMostrado =
+            false;
 
         try
         {
-            await navegadorSemaphore.WaitAsync();
+            DateOnly fechaReferencia =
+                DateOnly.FromDateTime(
+                    DateTime.Today);
 
-            try
-            {
-                DateOnly fechaReferencia =
-                    DateOnly.FromDateTime(
-                        DateTime.Today);
-
-                agenda =
-                    await hoyMilongaService.ObtenerAgendaAsync(
+            await foreach (
+                AgendaResultado resultadoDia
+                in hoyMilongaService
+                    .ObtenerAgendaProgresivaAsync(
                         Url,
-                        fechaReferencia);
-            }
-            finally
+                        fechaReferencia))
             {
-                navegadorSemaphore.Release();
+                if (resultadoDia.Milongas.Count == 0)
+                {
+                    continue;
+                }
+
+                agenda.AddRange(
+                    resultadoDia.Milongas);
+
+                if (!primerDiaMostrado)
+                {
+                    fechaActivaWeb =
+                        resultadoDia.FechaActiva;
+
+                    agendaCargada =
+                        true;
+
+                    DateOnly fechaSeleccionada =
+                        resultadoDia.FechaActiva;
+
+                    LblCargando.Visible =
+                        false;
+
+                    FlpMilongas.Visible =
+                        true;
+
+                    await ProgramarActualizacionAsync(
+                        fechaSeleccionada,
+                        TxtBuscar.Text,
+                        aplicarDemora: false);
+
+                    primerDiaMostrado =
+                        true;
+                }
             }
 
-            agendaCargada = true;
-
-            CargarBarrios();
-
-            DateOnly? fechaSeleccionada =
-                CargarFechas();
-
-            if (fechaSeleccionada.HasValue)
-            {
-                await ProgramarActualizacionAsync(
-                    fechaSeleccionada.Value,
-                    TxtBuscar.Text,
-                    aplicarDemora: false);
-            }
+            ActualizarFiltrosFinales();
         }
         catch (PlaywrightException ex)
         {
@@ -117,8 +161,17 @@ public partial class FormMilongas : Form
         }
         finally
         {
-            BtnCargar.Enabled = true;
-            BtnCargar.Text = "Cargar agenda";
+            LblCargando.Visible =
+                false;
+
+            FlpMilongas.Visible =
+                true;
+
+            BtnCargar.Enabled =
+                true;
+
+            BtnCargar.Text =
+                "Cargar agenda";
 
             HabilitarControlesAgenda(
                 agendaCargada);
@@ -141,18 +194,28 @@ public partial class FormMilongas : Form
 
         try
         {
+            DateOnly? fechaSeleccionadaAnterior =
+                CmbFecha.SelectedItem is DateOnly fecha
+                    ? fecha
+                    : null;
+
             List<DateOnly> fechas =
                 agenda
-                    .Select(milonga => milonga.Fecha)
+                    .Select(
+                        milonga =>
+                            milonga.Fecha)
                     .Distinct()
-                    .OrderBy(fecha => fecha)
+                    .OrderBy(
+                        fecha =>
+                            fecha)
                     .ToList();
 
             CmbFecha.Items.Clear();
 
-            foreach (DateOnly fecha in fechas)
+            foreach (DateOnly fechaDisponible in fechas)
             {
-                CmbFecha.Items.Add(fecha);
+                CmbFecha.Items.Add(
+                    fechaDisponible);
             }
 
             if (CmbFecha.Items.Count == 0)
@@ -160,25 +223,33 @@ public partial class FormMilongas : Form
                 return null;
             }
 
-            DateOnly hoy =
-                DateOnly.FromDateTime(
-                    DateTime.Today);
-
-            int indiceHoy =
-                CmbFecha.Items.IndexOf(hoy);
-
-            CmbFecha.SelectedIndex =
-                indiceHoy >= 0
-                    ? indiceHoy
-                    : 0;
-
-            if (CmbFecha.SelectedItem
-                is DateOnly fechaSeleccionada)
+            // Si el usuario ya estaba viendo una fecha,
+            // mantenemos esa selección.
+            if (fechaSeleccionadaAnterior.HasValue &&
+                CmbFecha.Items.Contains(
+                    fechaSeleccionadaAnterior.Value))
             {
-                return fechaSeleccionada;
+                CmbFecha.SelectedItem =
+                    fechaSeleccionadaAnterior.Value;
+            }
+            // En la primera carga usamos la fecha activa
+            // que informa Hoy Milonga.
+            else if (fechaActivaWeb.HasValue &&
+                     CmbFecha.Items.Contains(
+                         fechaActivaWeb.Value))
+            {
+                CmbFecha.SelectedItem =
+                    fechaActivaWeb.Value;
+            }
+            else
+            {
+                CmbFecha.SelectedIndex = 0;
             }
 
-            return null;
+            return CmbFecha.SelectedItem
+                is DateOnly fechaSeleccionada
+                    ? fechaSeleccionada
+                    : null;
         }
         finally
         {
@@ -192,6 +263,10 @@ public partial class FormMilongas : Form
 
         try
         {
+            string? barrioSeleccionado =
+                CmbBarrio.SelectedItem
+                    as string;
+
             List<string> barrios =
                 agendaService.ObtenerBarrios(
                     agenda);
@@ -202,10 +277,22 @@ public partial class FormMilongas : Form
 
             foreach (string barrio in barrios)
             {
-                CmbBarrio.Items.Add(barrio);
+                CmbBarrio.Items.Add(
+                    barrio);
             }
 
-            CmbBarrio.SelectedIndex = 0;
+            if (!string.IsNullOrWhiteSpace(
+                    barrioSeleccionado) &&
+                CmbBarrio.Items.Contains(
+                    barrioSeleccionado))
+            {
+                CmbBarrio.SelectedItem =
+                    barrioSeleccionado;
+            }
+            else
+            {
+                CmbBarrio.SelectedIndex = 0;
+            }
         }
         finally
         {
@@ -270,86 +357,114 @@ public partial class FormMilongas : Form
     }
 
     private async Task MostrarMilongasAsync(
-        DateOnly fecha,
-        string texto,
-        CancellationToken cancellationToken)
+    DateOnly fecha,
+    string texto,
+    CancellationToken cancellationToken)
     {
-        string? barrioSeleccionado =
-            ObtenerBarrioSeleccionado();
-
-        bool? tieneClase =
-            ObtenerFiltroClase();
-
-        FiltroAgenda filtro = new()
-        {
-            Fecha = fecha,
-            Texto = texto,
-            Barrio = barrioSeleccionado,
-            Cancelada = null,
-            TieneClase = tieneClase
-        };
-
-        List<Milonga> resultado =
-            agendaService.Filtrar(
-                agenda,
-                filtro);
-
-        cancellationToken.ThrowIfCancellationRequested();
-
-        if (resultado.Count == 0)
-        {
-            ActualizarTabla(resultado);
-            return;
-        }
-
-        await navegadorSemaphore.WaitAsync(
-            cancellationToken);
+        LblCargando.Visible = true;
+        FlpMilongas.Visible = false;
 
         try
         {
-            await hoyMilongaService.CompletarDetallesAsync(
-                resultado);
-        }
-        catch (PlaywrightException ex)
-        {
-            if (!cancellationToken.IsCancellationRequested)
+            string? barrioSeleccionado =
+                ObtenerBarrioSeleccionado();
+
+            bool? tieneClase =
+                ObtenerFiltroClase();
+
+            FiltroAgenda filtro = new()
             {
-                MessageBox.Show(
-                    $"No se pudo cargar una de las fichas:\n{ex.Message}",
-                    "Error de navegación",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+                Fecha = fecha,
+                Texto = texto,
+                Barrio = barrioSeleccionado,
+                Cancelada = null,
+                TieneClase = tieneClase
+            };
+
+            List<Milonga> resultado =
+                agendaService.Filtrar(
+                    agenda,
+                    filtro);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (resultado.Count == 0)
+            {
+                ActualizarTabla(resultado);
+                return;
             }
 
-            return;
+            List<Milonga> milongasPendientes =
+    resultado
+        .Where(
+            milonga =>
+                !milongasConDetalleCargado.Contains(
+                    milonga))
+        .ToList();
+
+            if (milongasPendientes.Count > 0)
+            {
+                await navegadorSemaphore.WaitAsync(
+                    cancellationToken);
+
+                try
+                {
+                    await hoyMilongaService.CompletarDetallesAsync(
+                        milongasPendientes);
+
+                    foreach (Milonga milonga in milongasPendientes)
+                    {
+                        milongasConDetalleCargado.Add(
+                            milonga);
+                    }
+                }
+                catch (PlaywrightException ex)
+                {
+                    if (!cancellationToken.IsCancellationRequested)
+                    {
+                        MessageBox.Show(
+                            $"No se pudo cargar una de las fichas:\n{ex.Message}",
+                            "Error de navegación",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                    }
+
+                    return;
+                }
+                finally
+                {
+                    navegadorSemaphore.Release();
+                }
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Coordenadas temporales del Obelisco.
+            double latitudOrigen = -34.6037;
+            double longitudOrigen = -58.3816;
+
+            distanciaService.CalcularDistancias(
+                resultado,
+                latitudOrigen,
+                longitudOrigen);
+
+            if (CmbOrden.SelectedItem?.ToString()
+                == "Distancia")
+            {
+                resultado =
+                    distanciaService.OrdenarPorDistancia(
+                        resultado);
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            ActualizarTabla(resultado);
         }
         finally
         {
-            navegadorSemaphore.Release();
+            LblCargando.Visible = false;
+            FlpMilongas.Visible = true;
         }
-
-        cancellationToken.ThrowIfCancellationRequested();
-
-        // Coordenadas temporales del Obelisco.
-        double latitudOrigen = -34.6037;
-        double longitudOrigen = -58.3816;
-
-        distanciaService.CalcularDistancias(
-            resultado,
-            latitudOrigen,
-            longitudOrigen);
-
-        if (CmbOrden.SelectedItem?.ToString()
-            == "Distancia")
-        {
-            resultado =
-                distanciaService.OrdenarPorDistancia(
-                    resultado);
-        }
-
-        cancellationToken.ThrowIfCancellationRequested();
-
-        ActualizarTabla(resultado);
     }
 
     private string? ObtenerBarrioSeleccionado()
@@ -386,6 +501,9 @@ public partial class FormMilongas : Form
     private void ActualizarTabla(
      List<Milonga> milongas)
     {
+        Debug.WriteLine(
+       $"RENDER TARJETAS - {DateTime.Now:HH:mm:ss.fff} - " +
+       $"{milongas.Count} milongas");
 
         FlpMilongas.Controls.Clear();
 
@@ -424,7 +542,8 @@ public partial class FormMilongas : Form
         object sender,
         EventArgs e)
     {
-        if (actualizandoFechas ||
+        if (actualizandoInterfaz ||
+            actualizandoFechas ||
             !agendaCargada ||
             CmbFecha.SelectedItem is not DateOnly fecha)
         {
@@ -438,10 +557,11 @@ public partial class FormMilongas : Form
     }
 
     private async void TxtBuscar_TextChanged(
-        object sender,
-        EventArgs e)
+    object sender,
+    EventArgs e)
     {
-        if (!agendaCargada ||
+        if (actualizandoInterfaz ||
+            !agendaCargada ||
             CmbFecha.SelectedItem is not DateOnly fecha)
         {
             return;
@@ -457,7 +577,8 @@ public partial class FormMilongas : Form
         object sender,
         EventArgs e)
     {
-        if (!agendaCargada ||
+        if (actualizandoInterfaz ||
+            !agendaCargada ||
             CmbFecha.SelectedItem is not DateOnly fecha)
         {
             return;
@@ -473,7 +594,8 @@ public partial class FormMilongas : Form
         object sender,
         EventArgs e)
     {
-        if (actualizandoFiltros ||
+        if (actualizandoInterfaz ||
+            actualizandoFiltros ||
             !agendaCargada ||
             CmbFecha.SelectedItem is not DateOnly fecha)
         {
@@ -490,8 +612,9 @@ public partial class FormMilongas : Form
         object sender,
         EventArgs e)
     {
-        if (!agendaCargada ||
-            CmbFecha.SelectedItem is not DateOnly fecha)
+        if (actualizandoInterfaz ||
+    !agendaCargada ||
+    CmbFecha.SelectedItem is not DateOnly fecha)
         {
             return;
         }
@@ -529,6 +652,33 @@ public partial class FormMilongas : Form
         finally
         {
             navegadorSemaphore.Release();
+        }
+    }
+
+    private void ActualizarFiltrosFinales()
+    {
+        actualizandoInterfaz = true;
+
+        SuspendLayout();
+
+        CmbFecha.BeginUpdate();
+        CmbBarrio.BeginUpdate();
+
+        try
+        {
+            CargarBarrios();
+            CargarFechas();
+
+            HabilitarControlesAgenda(true);
+        }
+        finally
+        {
+            CmbFecha.EndUpdate();
+            CmbBarrio.EndUpdate();
+
+            ResumeLayout(true);
+
+            actualizandoInterfaz = false;
         }
     }
 }

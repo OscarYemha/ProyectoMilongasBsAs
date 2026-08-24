@@ -38,11 +38,12 @@
             label3 = new Label();
             CmbClase = new ComboBox();
             FlpMilongas = new FlowLayoutPanel();
+            LblCargando = new Label();
             SuspendLayout();
             // 
             // BtnCargar
             // 
-            BtnCargar.Location = new Point(194, 12);
+            BtnCargar.Location = new Point(261, 12);
             BtnCargar.Name = "BtnCargar";
             BtnCargar.Size = new Size(100, 23);
             BtnCargar.TabIndex = 0;
@@ -55,7 +56,7 @@
             CmbFecha.FormattingEnabled = true;
             CmbFecha.Location = new Point(58, 41);
             CmbFecha.Name = "CmbFecha";
-            CmbFecha.Size = new Size(387, 23);
+            CmbFecha.Size = new Size(496, 23);
             CmbFecha.TabIndex = 1;
             CmbFecha.SelectedIndexChanged += TxtBuscar_TextChanged;
             // 
@@ -63,7 +64,7 @@
             // 
             TxtBuscar.Location = new Point(58, 70);
             TxtBuscar.Name = "TxtBuscar";
-            TxtBuscar.Size = new Size(387, 23);
+            TxtBuscar.Size = new Size(496, 23);
             TxtBuscar.TabIndex = 2;
             TxtBuscar.TextChanged += TxtBuscar_TextChanged;
             // 
@@ -72,7 +73,7 @@
             CmbOrden.FormattingEnabled = true;
             CmbOrden.Location = new Point(58, 119);
             CmbOrden.Name = "CmbOrden";
-            CmbOrden.Size = new Size(387, 23);
+            CmbOrden.Size = new Size(496, 23);
             CmbOrden.TabIndex = 4;
             CmbOrden.SelectedIndexChanged += CmbOrden_SelectedIndexChanged;
             // 
@@ -90,7 +91,7 @@
             CmbBarrio.FormattingEnabled = true;
             CmbBarrio.Location = new Point(58, 178);
             CmbBarrio.Name = "CmbBarrio";
-            CmbBarrio.Size = new Size(387, 23);
+            CmbBarrio.Size = new Size(496, 23);
             CmbBarrio.TabIndex = 6;
             CmbBarrio.SelectedIndexChanged += CmbBarrio_SelectedIndexChanged;
             // 
@@ -117,7 +118,7 @@
             CmbClase.FormattingEnabled = true;
             CmbClase.Location = new Point(58, 241);
             CmbClase.Name = "CmbClase";
-            CmbClase.Size = new Size(387, 23);
+            CmbClase.Size = new Size(496, 23);
             CmbClase.TabIndex = 9;
             CmbClase.SelectedIndexChanged += CmbClase_SelectedIndexChanged;
             // 
@@ -132,11 +133,26 @@
             FlpMilongas.TabIndex = 10;
             FlpMilongas.WrapContents = false;
             // 
+            // LblCargando
+            // 
+            LblCargando.AutoSize = true;
+            LblCargando.BackColor = Color.Transparent;
+            LblCargando.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            LblCargando.ForeColor = Color.DimGray;
+            LblCargando.Location = new Point(226, 267);
+            LblCargando.Name = "LblCargando";
+            LblCargando.Size = new Size(171, 21);
+            LblCargando.TabIndex = 11;
+            LblCargando.Text = "Cargando milongas...";
+            LblCargando.TextAlign = ContentAlignment.MiddleCenter;
+            LblCargando.Visible = false;
+            // 
             // FormMilongas
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 904);
+            Controls.Add(LblCargando);
             Controls.Add(FlpMilongas);
             Controls.Add(CmbClase);
             Controls.Add(label3);
@@ -165,5 +181,6 @@
         private Label label3;
         private ComboBox CmbClase;
         private FlowLayoutPanel FlpMilongas;
+        private Label LblCargando;
     }
 }

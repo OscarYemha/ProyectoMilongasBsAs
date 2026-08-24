@@ -12,8 +12,9 @@ public class HtmlExtractor
         documento.LoadHtml(html);
 
         HtmlNodeCollection? tarjetas =
-            documento.DocumentNode.SelectNodes(
-                "//a[contains(concat(' ', normalize-space(@class), ' '), ' event-list-item ')]");
+        documento.DocumentNode.SelectNodes(
+            "//*[@id='event-list']" +
+            "//a[contains(concat(' ', normalize-space(@class), ' '), ' event-list-item ')]");
 
         List<Milonga> milongas = new();
 

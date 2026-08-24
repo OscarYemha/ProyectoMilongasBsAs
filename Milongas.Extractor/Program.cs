@@ -15,14 +15,13 @@ try
     DateOnly fechaReferencia =
         DateOnly.FromDateTime(DateTime.Today);
 
-    List<Milonga> agenda =
-        await hoyMilongaService.ObtenerAgendaAsync(
-            url,
-            fechaReferencia);
+    AgendaResultado resultadoAgenda =
+    await hoyMilongaService.ObtenerAgendaAsync(
+        url,
+        fechaReferencia);
 
-    Console.WriteLine();
-    Console.WriteLine(
-        $"Total de milongas obtenidas: {agenda.Count}");
+    List<Milonga> agenda =
+        resultadoAgenda.Milongas;
 
 
     FiltroAgenda filtro = new()
@@ -36,13 +35,6 @@ try
         agendaService.Filtrar(
             agenda,
             filtro);
-
-    Console.WriteLine();
-    Console.WriteLine(
-        $"Milongas disponibles para {fechaReferencia:dd/MM/yyyy}: " +
-        $"{resultado.Count}");
-
-    Console.WriteLine();
 
     foreach (Milonga milonga in resultado)
     {
