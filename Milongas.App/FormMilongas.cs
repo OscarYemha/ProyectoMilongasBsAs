@@ -139,6 +139,11 @@ public partial class FormMilongas : Form
                     primerDiaMostrado =
                         true;
                 }
+                else
+                {
+                    await PrecargarDetallesAsync(
+                        resultadoDia.Milongas);
+                }
             }
 
             ActualizarFiltrosFinales();
@@ -679,6 +684,60 @@ public partial class FormMilongas : Form
             ResumeLayout(true);
 
             actualizandoInterfaz = false;
+        }
+    }
+
+    private async Task PrecargarDetallesAsync(
+    List<Milonga> milongas)
+    {
+        List<Milonga> pendientes =
+            milongas
+                .Where(
+                    milonga =>
+                        !milongasConDetalleCargado.Contains(
+                            milonga))
+                .ToList();
+
+        if (pendientes.Count == 0)
+        {
+            return;
+        }
+
+        await navegadorSemaphore.WaitAsync();
+
+        try
+        {
+            await hoyMilongaService
+                .CompletarDetallesAsync(
+                    pendientes);
+
+            foreach (Milonga milonga in pendientes)
+            {
+                milongasConDetalleCargado.Add(
+                    milonga);
+            }
+
+            // Dejamos preparada también la distancia.
+            // Por ahora seguimos usando el Obelisco.
+            double latitudOrigen =
+                -34.6037;
+
+            double longitudOrigen =
+                -58.3816;
+
+            distanciaService.CalcularDistancias(
+                pendientes,
+                latitudOrigen,
+                longitudOrigen);
+        }
+        catch (PlaywrightException ex)
+        {
+            Debug.WriteLine(
+                $"Error precargando detalles: {ex.Message}");
+        }
+        finally
+        {
+            navegadorSemaphore.Release();
         }
     }
 }
