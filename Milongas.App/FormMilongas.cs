@@ -353,7 +353,8 @@ public partial class FormMilongas : Form
             await MostrarMilongasAsync(
                 fecha,
                 texto,
-                cancellationToken);
+                cancellationToken,
+                mostrarCarga: !aplicarDemora);
         }
         catch (OperationCanceledException)
         {
@@ -364,10 +365,14 @@ public partial class FormMilongas : Form
     private async Task MostrarMilongasAsync(
     DateOnly fecha,
     string texto,
-    CancellationToken cancellationToken)
+    CancellationToken cancellationToken,
+    bool mostrarCarga)
     {
-        LblCargando.Visible = true;
-        FlpMilongas.Visible = false;
+        if (mostrarCarga)
+        {
+            LblCargando.Visible = true;
+            FlpMilongas.Visible = false;
+        }
 
         try
         {
@@ -467,8 +472,11 @@ public partial class FormMilongas : Form
         }
         finally
         {
-            LblCargando.Visible = false;
-            FlpMilongas.Visible = true;
+            if (mostrarCarga)
+            {
+                LblCargando.Visible = false;
+                FlpMilongas.Visible = true;
+            }
         }
     }
 
