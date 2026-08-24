@@ -13,6 +13,13 @@ public partial class MilongaCard : UserControl
 
     private int grosorBorde = 1;
 
+    private const int AlturaNormal = 150;
+    private const int AlturaCancelada = 85;
+
+    private const int MargenIzquierdo = 20;
+    private const int XContenidoConImagen = 100;
+    private const int MargenDerecho = 20;
+
     public MilongaCard(
         Func<Milonga, Task<MilongaDetalle>> obtenerDetalleAsync)
     {
@@ -24,7 +31,13 @@ public partial class MilongaCard : UserControl
         DoubleBuffered = true;
         ResizeRedraw = true;
 
+        SetStyle(
+            ControlStyles.AllPaintingInWmPaint |
+            ControlStyles.UserPaint |
+            ControlStyles.OptimizedDoubleBuffer,
+            true);
 
+        UpdateStyles();
 
         Click += MilongaCard_Click;
         PicImagen.Click += MilongaCard_Click;
@@ -33,7 +46,10 @@ public partial class MilongaCard : UserControl
         LblHorario.Click += MilongaCard_Click;
         LblUbicacion.Click += MilongaCard_Click;
         LblClaseDistancia.Click += MilongaCard_Click;
-
+        LblEstado.Click += MilongaCard_Click;
+        LblModalidadEntrada.Click += MilongaCard_Click;
+        LblEventoEspecial.Click += MilongaCard_Click;
+        LblCancelada.Click += MilongaCard_Click;
 
     }
 
@@ -55,6 +71,11 @@ public partial class MilongaCard : UserControl
         e.Graphics.DrawRectangle(
             pen,
             rectangulo);
+    }
+
+    protected override void OnPaintBackground(PaintEventArgs e)
+    {
+        e.Graphics.Clear(BackColor);
     }
 
     private void AplicarEstilo(
@@ -181,10 +202,13 @@ public partial class MilongaCard : UserControl
             LblClaseDistancia.Visible =
                 false;
 
-            FlpDestacados.Visible =
+            PicImagen.Visible = 
                 false;
 
-            PicImagen.Visible = 
+            LblModalidadEntrada.Visible = 
+                false;
+
+            LblEventoEspecial.Visible = 
                 false;
 
             CargarImagen(milonga);
@@ -230,10 +254,6 @@ public partial class MilongaCard : UserControl
         MostrarLabel(
             LblEventoEspecial,
             milonga.EventoEspecial);
-
-        FlpDestacados.Visible =
-    LblModalidadEntrada.Visible ||
-    LblEventoEspecial.Visible;
 
         AjustarLayoutNormal();
     }
@@ -341,42 +361,120 @@ public partial class MilongaCard : UserControl
 
     private void AjustarLayoutCancelada()
     {
-        Height = 85;
-
         PicImagen.Visible = false;
 
-        int separacion = 3;
+        const int margenIzquierdo = 20;
+        const int margenDerecho = 15;
+        const int separacionHorizontal = 15;
+        const int separacionVertical = 3;
+
+        // Primero calculamos dónde quedará CANCELADO.
+        int xCancelada =
+            ClientSize.Width -
+            LblCancelada.Width -
+            margenDerecho;
+
+        int anchoNombre =
+            xCancelada -
+            separacionHorizontal -
+            margenIzquierdo;
+
+        // Medimos cuánto ocuparía el nombre en una sola línea.
+        Size tamañoUnaLinea =
+            TextRenderer.MeasureText(
+                LblNombre.Text,
+                LblNombre.Font,
+                new Size(
+                    int.MaxValue,
+                    int.MaxValue),
+                TextFormatFlags.SingleLine);
+
+        bool necesitaDosLineas =
+            tamañoUnaLinea.Width >
+            anchoNombre;
+
+        Height =
+            necesitaDosLineas
+                ? 85
+                : 65;
+
+        // Ahora centramos CANCELADO usando
+        // la altura definitiva de la tarjeta.
+        LblCancelada.Location =
+            new Point(
+                xCancelada,
+                (ClientSize.Height -
+                 LblCancelada.Height) / 2);
+
+        LblNombre.AutoSize = false;
+        LblNombre.Width =
+            Math.Max(
+                80,
+                anchoNombre);
+
+        LblNombre.Height =
+            necesitaDosLineas
+                ? 44
+                : 24;
+
+        LblNombre.AutoEllipsis = true;
+        LblNombre.TextAlign =
+            ContentAlignment.MiddleLeft;
 
         int altoContenido =
             LblTipo.Height +
-            separacion +
+            separacionVertical +
             LblNombre.Height;
 
         int yInicial =
-            (ClientSize.Height - altoContenido) / 2;
+            (ClientSize.Height -
+             altoContenido) / 2;
 
         LblTipo.Location =
-            new Point(20, yInicial);
+            new Point(
+                margenIzquierdo,
+                yInicial);
 
         LblNombre.Location =
             new Point(
-                20,
+                margenIzquierdo,
                 yInicial +
                 LblTipo.Height +
-                separacion);
-
-        LblCancelada.Location =
-            new Point(
-                ClientSize.Width -
-                LblCancelada.Width -
-                25,
-                (ClientSize.Height -
-                 LblCancelada.Height) / 2);
+                separacionVertical);
     }
 
     private void AjustarLayoutNormal()
     {
-        Height = 130;
+        int cantidadFilas =
+    new Control[]
+    {
+        LblTipo,
+        LblNombre,
+        LblHorario,
+        LblUbicacion,
+        LblClaseDistancia,
+        LblModalidadEntrada,
+        LblEventoEspecial
+    }
+    .Count(control => control.Visible);
+
+        Height =
+            cantidadFilas switch
+            {
+                <= 5 => 115,
+                6 => 135,
+                _ => 150
+            };
+
+        int xContenido =
+            PicImagen.Visible
+                ? 100
+                : 20;
+
+        int anchoContenido =
+            ClientSize.Width -
+            xContenido -
+            20;
 
         if (PicImagen.Visible)
         {
@@ -387,14 +485,38 @@ public partial class MilongaCard : UserControl
                      PicImagen.Height) / 2);
         }
 
-        Control[] controles =
-        {
+        LblNombre.AutoSize = false;
+        LblNombre.Width = anchoContenido;
+        LblNombre.Height = 24;
+        LblNombre.AutoEllipsis = true;
+
+        ConfigurarAnchoLabel(
+            LblUbicacion,
+            anchoContenido);
+
+        ConfigurarAnchoLabel(
+            LblClaseDistancia,
+            anchoContenido);
+
+        ConfigurarAnchoLabel(
+            LblModalidadEntrada,
+            anchoContenido);
+
+        ConfigurarAnchoLabel(
+            LblEventoEspecial,
+            anchoContenido);
+
+        const int separacion = 3;
+
+        List<Control> controles = new()
+    {
         LblTipo,
         LblNombre,
         LblHorario,
         LblUbicacion,
         LblClaseDistancia,
-        FlpDestacados
+        LblModalidadEntrada,
+        LblEventoEspecial
     };
 
         List<Control> visibles =
@@ -402,24 +524,46 @@ public partial class MilongaCard : UserControl
                 .Where(control => control.Visible)
                 .ToList();
 
-        const int separacion = 3;
-
         int altoContenido =
-            visibles.Sum(control => control.Height) +
-            separacion * Math.Max(
+            visibles.Sum(
+                control => control.Height) +
+            separacion *
+            Math.Max(
                 0,
                 visibles.Count - 1);
 
         int y =
-            (ClientSize.Height -
-             altoContenido) / 2;
+            Math.Max(
+                6,
+                (ClientSize.Height -
+                 altoContenido) / 2);
 
         foreach (Control control in visibles)
         {
-            int xContenido =
-                PicImagen.Visible
-                    ? 100
-                    : 20;
+            // Horario se acomoda aparte si hay estado.
+            if (control == LblHorario &&
+                LblEstado.Visible)
+            {
+                LblEstado.Location =
+                    new Point(
+                        xContenido,
+                        y +
+                        (LblHorario.Height -
+                         LblEstado.Height) / 2);
+
+                LblHorario.Location =
+                    new Point(
+                        LblEstado.Right + 6,
+                        y);
+
+                y +=
+                    Math.Max(
+                        LblEstado.Height,
+                        LblHorario.Height) +
+                    separacion;
+
+                continue;
+            }
 
             control.Location =
                 new Point(
@@ -430,20 +574,15 @@ public partial class MilongaCard : UserControl
                 control.Height +
                 separacion;
         }
+    }
 
-        if (LblEstado.Visible)
-        {
-            LblEstado.Location =
-                new Point(
-                    LblHorario.Left,
-                    LblHorario.Top +
-                    (LblHorario.Height -
-                     LblEstado.Height) / 2);
-
-            LblHorario.Location =
-                new Point(
-                    LblEstado.Right + 6,
-                    LblHorario.Top);
-        }
+    private static void ConfigurarAnchoLabel(
+    Label label,
+    int ancho)
+    {
+        label.AutoSize = false;
+        label.Width = Math.Max(20, ancho);
+        label.Height = 18;
+        label.AutoEllipsis = true;
     }
 }

@@ -38,9 +38,7 @@
             LblEventoEspecial = new Label();
             LblCancelada = new Label();
             LblEstado = new Label();
-            FlpDestacados = new FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)PicImagen).BeginInit();
-            FlpDestacados.SuspendLayout();
             SuspendLayout();
             // 
             // PicImagen
@@ -101,7 +99,7 @@
             // LblModalidadEntrada
             // 
             LblModalidadEntrada.AutoSize = true;
-            LblModalidadEntrada.Location = new Point(3, 0);
+            LblModalidadEntrada.Location = new Point(0, 0);
             LblModalidadEntrada.Name = "LblModalidadEntrada";
             LblModalidadEntrada.Size = new Size(38, 15);
             LblModalidadEntrada.TabIndex = 6;
@@ -110,7 +108,7 @@
             // LblEventoEspecial
             // 
             LblEventoEspecial.AutoSize = true;
-            LblEventoEspecial.Location = new Point(3, 15);
+            LblEventoEspecial.Location = new Point(0, 0);
             LblEventoEspecial.Name = "LblEventoEspecial";
             LblEventoEspecial.Size = new Size(38, 15);
             LblEventoEspecial.TabIndex = 7;
@@ -141,38 +139,24 @@
             LblEstado.TabIndex = 10;
             LblEstado.Visible = false;
             // 
-            // FlpDestacados
-            // 
-            FlpDestacados.AutoSize = true;
-            FlpDestacados.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            FlpDestacados.Controls.Add(LblModalidadEntrada);
-            FlpDestacados.Controls.Add(LblEventoEspecial);
-            FlpDestacados.FlowDirection = FlowDirection.TopDown;
-            FlpDestacados.Location = new Point(96, 73);
-            FlpDestacados.Name = "FlpDestacados";
-            FlpDestacados.Size = new Size(44, 30);
-            FlpDestacados.TabIndex = 8;
-            FlpDestacados.WrapContents = false;
-            // 
             // MilongaCard
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            Controls.Add(LblClaseDistancia);
-            Controls.Add(LblUbicacion);
-            Controls.Add(LblHorario);
-            Controls.Add(LblNombre);
-            Controls.Add(LblTipo);
             Controls.Add(PicImagen);
-            Controls.Add(FlpDestacados);
+            Controls.Add(LblTipo);
+            Controls.Add(LblNombre);
+            Controls.Add(LblHorario);
+            Controls.Add(LblUbicacion);
+            Controls.Add(LblClaseDistancia);
+            Controls.Add(LblModalidadEntrada);
+            Controls.Add(LblEventoEspecial);
             Controls.Add(LblCancelada);
             Controls.Add(LblEstado);
             Name = "MilongaCard";
             Size = new Size(420, 125);
             ((System.ComponentModel.ISupportInitialize)PicImagen).EndInit();
-            FlpDestacados.ResumeLayout(false);
-            FlpDestacados.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -189,6 +173,5 @@
         private Label LblEventoEspecial;
         private Label LblCancelada;
         private Label LblEstado;
-        private FlowLayoutPanel FlpDestacados;
     }
 }
