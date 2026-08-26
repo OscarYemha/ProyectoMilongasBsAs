@@ -164,7 +164,7 @@
             Controls.Add(CmbFecha);
             Controls.Add(BtnCargar);
             Name = "FormMilongas";
-            Text = "Form1";
+            Text = "Agenda de Milongas";
             ResumeLayout(false);
             PerformLayout();
         }

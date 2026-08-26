@@ -129,7 +129,7 @@
             Controls.Add(panel2);
             Controls.Add(PnlMilongas);
             Name = "FormPrincipal";
-            Text = "FormPrincipal";
+            Text = "Agenda de Milongas";
             PnlMilongas.ResumeLayout(false);
             PnlMilongas.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)PicMilongas).EndInit();
