@@ -10,51 +10,61 @@ public class AgendaService
         List<Milonga> milongas,
         FiltroAgenda filtro)
     {
-        List<Milonga> resultado = new();
+        List<Milonga> resultado =
+            new();
 
         string barrioBuscado =
-            NormalizarBarrio(filtro.Barrio ?? "");
+            NormalizarBarrio(
+                filtro.Barrio ?? "");
 
         string textoBuscado =
-            NormalizarTexto(filtro.Texto ?? "");
+            NormalizarTexto(
+                filtro.Texto ?? "");
 
         foreach (Milonga milonga in milongas)
         {
-            // Fecha
             if (filtro.Fecha.HasValue &&
                 milonga.Fecha != filtro.Fecha.Value)
             {
                 continue;
             }
 
-            // Barrio
-            if (!string.IsNullOrWhiteSpace(filtro.Barrio))
+            if (!string.IsNullOrWhiteSpace(
+                    filtro.Barrio))
             {
                 string barrioMilonga =
-                    NormalizarBarrio(milonga.Barrio);
+                    NormalizarBarrio(
+                        milonga.Barrio);
 
-                if (barrioMilonga != barrioBuscado)
+                if (barrioMilonga !=
+                    barrioBuscado)
                 {
                     continue;
                 }
             }
 
-            // Búsqueda general
-            if (!string.IsNullOrWhiteSpace(filtro.Texto))
+            if (!string.IsNullOrWhiteSpace(
+                    filtro.Texto))
             {
                 string nombre =
-                    NormalizarTexto(milonga.Nombre);
+                    NormalizarTexto(
+                        milonga.Nombre);
 
                 string salon =
-                    NormalizarTexto(milonga.Salon);
+                    NormalizarTexto(
+                        milonga.Salon);
 
                 string barrio =
-                    NormalizarTexto(milonga.Barrio);
+                    NormalizarTexto(
+                        milonga.Barrio);
 
                 bool coincide =
-                    nombre.Contains(textoBuscado) ||
-                    salon.Contains(textoBuscado) ||
-                    barrio.Contains(textoBuscado);
+                    nombre.Contains(
+                        textoBuscado) ||
+                    salon.Contains(
+                        textoBuscado) ||
+                    barrio.Contains(
+                        textoBuscado);
 
                 if (!coincide)
                 {
@@ -62,42 +72,48 @@ public class AgendaService
                 }
             }
 
-            // Cancelada
             if (filtro.Cancelada.HasValue &&
-                milonga.Cancelada != filtro.Cancelada.Value)
+                milonga.Cancelada !=
+                filtro.Cancelada.Value)
             {
                 continue;
             }
 
-            // Clase
             if (filtro.TieneClase.HasValue &&
-                milonga.TieneClase != filtro.TieneClase.Value)
+                milonga.TieneClase !=
+                filtro.TieneClase.Value)
             {
                 continue;
             }
 
-            resultado.Add(milonga);
+            resultado.Add(
+                milonga);
         }
 
-        return OrdenarPorHorario(resultado);
+        return OrdenarPorHorario(
+            resultado);
     }
 
     public List<string> ObtenerBarrios(
         List<Milonga> milongas)
     {
-        Dictionary<string, string> barrios = new();
+        Dictionary<string, string> barrios =
+            new();
 
         foreach (Milonga milonga in milongas)
         {
-            if (string.IsNullOrWhiteSpace(milonga.Barrio))
+            if (string.IsNullOrWhiteSpace(
+                    milonga.Barrio))
             {
                 continue;
             }
 
             string barrioNormalizado =
-                NormalizarBarrio(milonga.Barrio);
+                NormalizarBarrio(
+                    milonga.Barrio);
 
-            if (!barrios.ContainsKey(barrioNormalizado))
+            if (!barrios.ContainsKey(
+                    barrioNormalizado))
             {
                 barrios.Add(
                     barrioNormalizado,
@@ -105,29 +121,32 @@ public class AgendaService
             }
         }
 
-        List<string> resultado =
-            barrios.Values.ToList();
-
-        resultado.Sort();
-
-        return resultado;
+        return barrios
+            .Values
+            .OrderBy(
+                barrio =>
+                    barrio)
+            .ToList();
     }
 
-    private static List<Milonga> OrdenarPorHorario(
-    List<Milonga> milongas)
+    private static List<Milonga>
+        OrdenarPorHorario(
+            List<Milonga> milongas)
     {
         return milongas
             .OrderBy(
                 milonga =>
-                    ObtenerPrioridad(milonga))
+                    ObtenerPrioridad(
+                        milonga))
             .ThenBy(
                 milonga =>
-                    ObtenerHoraInicio(milonga.Horario))
+                    ObtenerHoraInicio(
+                        milonga.Horario))
             .ToList();
     }
 
     private static int ObtenerPrioridad(
-    Milonga milonga)
+        Milonga milonga)
     {
         if (milonga.Destacada)
         {
@@ -155,17 +174,20 @@ public class AgendaService
     private static TimeOnly ObtenerHoraInicio(
         string horario)
     {
-        if (string.IsNullOrWhiteSpace(horario))
+        if (string.IsNullOrWhiteSpace(
+                horario))
         {
             return TimeOnly.MaxValue;
         }
 
         string horaTexto =
-            horario.Split('-')[0].Trim();
+            horario
+                .Split('-')[0]
+                .Trim();
 
         if (TimeOnly.TryParse(
-            horaTexto,
-            out TimeOnly hora))
+                horaTexto,
+                out TimeOnly hora))
         {
             return hora;
         }
@@ -176,7 +198,8 @@ public class AgendaService
     private static string NormalizarTexto(
         string texto)
     {
-        if (string.IsNullOrWhiteSpace(texto))
+        if (string.IsNullOrWhiteSpace(
+                texto))
         {
             return "";
         }
@@ -185,19 +208,24 @@ public class AgendaService
             texto.Normalize(
                 NormalizationForm.FormD);
 
-        StringBuilder resultado = new();
+        StringBuilder resultado =
+            new();
 
-        foreach (char caracter in textoNormalizado)
+        foreach (
+            char caracter
+            in textoNormalizado)
         {
             UnicodeCategory categoria =
-                CharUnicodeInfo.GetUnicodeCategory(
-                    caracter);
+                CharUnicodeInfo
+                    .GetUnicodeCategory(
+                        caracter);
 
             if (categoria !=
                 UnicodeCategory.NonSpacingMark)
             {
                 resultado.Append(
-                    char.ToLowerInvariant(caracter));
+                    char.ToLowerInvariant(
+                        caracter));
             }
         }
 
@@ -212,12 +240,15 @@ public class AgendaService
         string barrio)
     {
         string resultado =
-            NormalizarTexto(barrio);
+            NormalizarTexto(
+                barrio);
 
-        if (resultado.EndsWith(", caba"))
+        if (resultado.EndsWith(
+                ", caba"))
         {
             resultado =
-                resultado[..^6].Trim();
+                resultado[..^6]
+                    .Trim();
         }
 
         return resultado;

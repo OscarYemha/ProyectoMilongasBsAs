@@ -4,7 +4,8 @@ namespace Milongas.Extractor.Services;
 
 public class DistanciaService
 {
-    private const double RadioTierraKm = 6371.0;
+    private const double RadioTierraKm =
+        6371.0;
 
     public void CalcularDistancias(
         List<Milonga> milongas,
@@ -16,7 +17,9 @@ public class DistanciaService
             if (!milonga.Latitud.HasValue ||
                 !milonga.Longitud.HasValue)
             {
-                milonga.DistanciaKm = null;
+                milonga.DistanciaKm =
+                    null;
+
                 continue;
             }
 
@@ -33,8 +36,10 @@ public class DistanciaService
         List<Milonga> milongas)
     {
         return milongas
-            .OrderBy(milonga =>
-                milonga.DistanciaKm ?? double.MaxValue)
+            .OrderBy(
+                milonga =>
+                    milonga.DistanciaKm ??
+                    double.MaxValue)
             .ToList();
     }
 
@@ -45,44 +50,60 @@ public class DistanciaService
         double longitudDestino)
     {
         double latitudOrigenRad =
-            ConvertirARadianes(latitudOrigen);
+            ConvertirARadianes(
+                latitudOrigen);
 
         double longitudOrigenRad =
-            ConvertirARadianes(longitudOrigen);
+            ConvertirARadianes(
+                longitudOrigen);
 
         double latitudDestinoRad =
-            ConvertirARadianes(latitudDestino);
+            ConvertirARadianes(
+                latitudDestino);
 
         double longitudDestinoRad =
-            ConvertirARadianes(longitudDestino);
+            ConvertirARadianes(
+                longitudDestino);
 
         double diferenciaLatitud =
-            latitudDestinoRad - latitudOrigenRad;
+            latitudDestinoRad -
+            latitudOrigenRad;
 
         double diferenciaLongitud =
-            longitudDestinoRad - longitudOrigenRad;
+            longitudDestinoRad -
+            longitudOrigenRad;
 
         double a =
             Math.Pow(
-                Math.Sin(diferenciaLatitud / 2),
+                Math.Sin(
+                    diferenciaLatitud / 2),
                 2) +
-            Math.Cos(latitudOrigenRad) *
-            Math.Cos(latitudDestinoRad) *
+            Math.Cos(
+                latitudOrigenRad) *
+            Math.Cos(
+                latitudDestinoRad) *
             Math.Pow(
-                Math.Sin(diferenciaLongitud / 2),
+                Math.Sin(
+                    diferenciaLongitud / 2),
                 2);
 
         double c =
-            2 * Math.Atan2(
+            2 *
+            Math.Atan2(
                 Math.Sqrt(a),
                 Math.Sqrt(1 - a));
 
-        return RadioTierraKm * c;
+        return
+            RadioTierraKm *
+            c;
     }
 
     private static double ConvertirARadianes(
         double grados)
     {
-        return grados * Math.PI / 180.0;
+        return
+            grados *
+            Math.PI /
+            180.0;
     }
 }

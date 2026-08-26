@@ -197,7 +197,7 @@ public class HoyMilongaService : IAsyncDisposable
             if (intento < maxIntentos)
             {
                 await Task.Delay(
-                    700);
+                    300);
             }
         }
 
@@ -209,11 +209,7 @@ public class HoyMilongaService : IAsyncDisposable
     {
         return
             !string.IsNullOrWhiteSpace(
-                detalle.Direccion) ||
-            !string.IsNullOrWhiteSpace(
                 detalle.Organizadores) ||
-            !string.IsNullOrWhiteSpace(
-                detalle.Estado) ||
             !string.IsNullOrWhiteSpace(
                 detalle.Descripcion) ||
             !string.IsNullOrWhiteSpace(

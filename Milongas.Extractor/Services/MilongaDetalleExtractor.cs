@@ -12,31 +12,40 @@ public class MilongaDetalleExtractor
         string html)
     {
         HtmlDocument documento =
-            CargarDocumento(html);
+            CargarDocumento(
+                html);
 
         milonga.Direccion =
-            ObtenerDireccion(documento);
+            ObtenerDireccion(
+                documento);
 
         (double? latitud, double? longitud) =
-            ObtenerCoordenadas(documento);
+            ObtenerCoordenadas(
+                documento);
 
-        milonga.Latitud = latitud;
-        milonga.Longitud = longitud;
+        milonga.Latitud =
+            latitud;
+
+        milonga.Longitud =
+            longitud;
     }
 
     public MilongaDetalle ObtenerDetalle(
         string html)
     {
         HtmlDocument documento =
-            CargarDocumento(html);
+            CargarDocumento(
+                html);
 
         (double? latitud, double? longitud) =
-            ObtenerCoordenadas(documento);
+            ObtenerCoordenadas(
+                documento);
 
-        MilongaDetalle detalle = new()
+        return new MilongaDetalle
         {
             Direccion =
-                ObtenerDireccion(documento),
+                ObtenerDireccion(
+                    documento),
 
             Latitud =
                 latitud,
@@ -45,13 +54,16 @@ public class MilongaDetalleExtractor
                 longitud,
 
             Organizadores =
-                ObtenerOrganizadores(documento),
+                ObtenerOrganizadores(
+                    documento),
 
             Estado =
-                ObtenerEstado(documento),
+                ObtenerEstado(
+                    documento),
 
             RecomiendaReservar =
-                ObtenerRecomiendaReservar(documento),
+                ObtenerRecomiendaReservar(
+                    documento),
 
             Facebook =
                 ObtenerContacto(
@@ -89,27 +101,31 @@ public class MilongaDetalleExtractor
                     "contact-options-website"),
 
             Descripcion =
-                ObtenerDescripcion(documento),
+                ObtenerDescripcion(
+                    documento),
 
             ImagenDetalle =
-                ObtenerImagenDetalle(documento),
+                ObtenerImagenDetalle(
+                    documento),
 
             Foto =
-                ObtenerFoto(documento),
+                ObtenerFoto(
+                    documento),
 
             LinkMapa =
-                ObtenerLinkMapa(documento),
+                ObtenerLinkMapa(
+                    documento)
         };
-
-        return detalle;
     }
 
     private static HtmlDocument CargarDocumento(
         string html)
     {
-        HtmlDocument documento = new();
+        HtmlDocument documento =
+            new();
 
-        documento.LoadHtml(html);
+        documento.LoadHtml(
+            html);
 
         return documento;
     }
@@ -118,8 +134,9 @@ public class MilongaDetalleExtractor
         HtmlDocument documento)
     {
         HtmlNode? nodoDireccion =
-            documento.DocumentNode.SelectSingleNode(
-                "//span[contains(@class,'user-select-all')]");
+            documento.DocumentNode
+                .SelectSingleNode(
+                    "//span[contains(@class,'user-select-all')]");
 
         if (nodoDireccion is null)
         {
@@ -136,24 +153,19 @@ public class MilongaDetalleExtractor
         ObtenerCoordenadas(
             HtmlDocument documento)
     {
-        HtmlNode? enlaceMapa =
-            documento.DocumentNode.SelectSingleNode(
-                "//a[contains(@href,'maps.google')]");
+        string linkMapa =
+            ObtenerLinkMapa(
+                documento);
 
-        if (enlaceMapa is null)
+        if (string.IsNullOrWhiteSpace(
+                linkMapa))
         {
             return (null, null);
         }
 
-        string href =
-            HtmlEntity.DeEntitize(
-                enlaceMapa.GetAttributeValue(
-                    "href",
-                    ""));
-
         Match coincidencia =
             Regex.Match(
-                href,
+                linkMapa,
                 @"daddr=(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)",
                 RegexOptions.IgnoreCase);
 
@@ -182,15 +194,18 @@ public class MilongaDetalleExtractor
             return (null, null);
         }
 
-        return (latitud, longitud);
+        return (
+            latitud,
+            longitud);
     }
 
     private static string ObtenerOrganizadores(
         HtmlDocument documento)
     {
         HtmlNode? nodoOrganizadores =
-            documento.DocumentNode.SelectSingleNode(
-                "//span[contains(normalize-space(.),'Organizadores/as:')]");
+            documento.DocumentNode
+                .SelectSingleNode(
+                    "//span[contains(normalize-space(.),'Organizadores/as:')]");
 
         if (nodoOrganizadores is null)
         {
@@ -212,13 +227,14 @@ public class MilongaDetalleExtractor
     }
 
     private static string ObtenerEstado(
-    HtmlDocument documento)
+        HtmlDocument documento)
     {
         HtmlNode? nodoEstado =
-            documento.DocumentNode.SelectSingleNode(
-                "//div[contains(@class,'grid-title')]" +
-                "//span[contains(@class,'badge') and " +
-                "contains(@class,'badge-pill')]");
+            documento.DocumentNode
+                .SelectSingleNode(
+                    "//div[contains(@class,'grid-title')]" +
+                    "//span[contains(@class,'badge') and " +
+                    "contains(@class,'badge-pill')]");
 
         if (nodoEstado is null)
         {
@@ -233,9 +249,10 @@ public class MilongaDetalleExtractor
         HtmlDocument documento)
     {
         HtmlNode? nodoReserva =
-            documento.DocumentNode.SelectSingleNode(
-                "//span[contains(@class,'text-danger') and " +
-                "contains(normalize-space(.),'Se aconseja reservar')]");
+            documento.DocumentNode
+                .SelectSingleNode(
+                    "//span[contains(@class,'text-danger') and " +
+                    "contains(normalize-space(.),'Se aconseja reservar')]");
 
         return nodoReserva is not null;
     }
@@ -245,8 +262,9 @@ public class MilongaDetalleExtractor
         string id)
     {
         HtmlNode? nodo =
-            documento.DocumentNode.SelectSingleNode(
-                $"//a[@id='{id}']");
+            documento.DocumentNode
+                .SelectSingleNode(
+                    $"//a[@id='{id}']");
 
         if (nodo is null)
         {
@@ -263,8 +281,9 @@ public class MilongaDetalleExtractor
         HtmlDocument documento)
     {
         HtmlNode? nodoDescripcion =
-            documento.DocumentNode.SelectSingleNode(
-                "//p[contains(@class,'pre-line')]");
+            documento.DocumentNode
+                .SelectSingleNode(
+                    "//p[contains(@class,'pre-line')]");
 
         if (nodoDescripcion is null)
         {
@@ -276,12 +295,13 @@ public class MilongaDetalleExtractor
     }
 
     private static string ObtenerImagenDetalle(
-    HtmlDocument documento)
+        HtmlDocument documento)
     {
         HtmlNode? nodoImagen =
-            documento.DocumentNode.SelectSingleNode(
-                "//div[contains(@class,'grid-logo')]" +
-                "//img[contains(@src,'/data_images/event/logo/')]");
+            documento.DocumentNode
+                .SelectSingleNode(
+                    "//div[contains(@class,'grid-logo')]" +
+                    "//img[contains(@src,'/data_images/event/logo/')]");
 
         if (nodoImagen is null)
         {
@@ -294,32 +314,14 @@ public class MilongaDetalleExtractor
                 ""));
     }
 
-    private static string LimpiarTexto(
-        string? texto)
-    {
-        if (string.IsNullOrWhiteSpace(texto))
-        {
-            return "";
-        }
-
-        string decodificado =
-            HtmlEntity.DeEntitize(
-                texto);
-
-        return string.Join(
-            " ",
-            decodificado.Split(
-                [' ', '\r', '\n', '\t'],
-                StringSplitOptions.RemoveEmptyEntries));
-    }
-
     private static string ObtenerFoto(
-    HtmlDocument documento)
+        HtmlDocument documento)
     {
         HtmlNode? nodoImagen =
-            documento.DocumentNode.SelectSingleNode(
-                "//img[@alt='photo' and " +
-                "contains(@src,'/data_images/event/photo/')]");
+            documento.DocumentNode
+                .SelectSingleNode(
+                    "//img[@alt='photo' and " +
+                    "contains(@src,'/data_images/event/photo/')]");
 
         if (nodoImagen is null)
         {
@@ -333,11 +335,12 @@ public class MilongaDetalleExtractor
     }
 
     private static string ObtenerLinkMapa(
-    HtmlDocument documento)
+        HtmlDocument documento)
     {
         HtmlNode? enlaceMapa =
-            documento.DocumentNode.SelectSingleNode(
-                "//a[contains(@href,'maps.google')]");
+            documento.DocumentNode
+                .SelectSingleNode(
+                    "//a[contains(@href,'maps.google')]");
 
         if (enlaceMapa is null)
         {
@@ -350,5 +353,24 @@ public class MilongaDetalleExtractor
                 ""));
     }
 
-    
+    private static string LimpiarTexto(
+        string? texto)
+    {
+        if (string.IsNullOrWhiteSpace(
+                texto))
+        {
+            return "";
+        }
+
+        string decodificado =
+            HtmlEntity.DeEntitize(
+                texto);
+
+        return string.Join(
+            " ",
+            decodificado.Split(
+                [' ', '\r', '\n', '\t'],
+                StringSplitOptions
+                    .RemoveEmptyEntries));
+    }
 }

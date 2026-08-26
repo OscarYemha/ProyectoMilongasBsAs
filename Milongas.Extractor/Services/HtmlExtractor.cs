@@ -6,17 +6,24 @@ namespace Milongas.Extractor.Services;
 
 public class HtmlExtractor
 {
-    public List<Milonga> ObtenerMilongas(string html)
+    public List<Milonga> ObtenerMilongas(
+        string html)
     {
-        HtmlDocument documento = new();
-        documento.LoadHtml(html);
+        HtmlDocument documento =
+            new();
+
+        documento.LoadHtml(
+            html);
 
         HtmlNodeCollection? tarjetas =
-        documento.DocumentNode.SelectNodes(
-            "//*[@id='event-list']" +
-            "//a[contains(concat(' ', normalize-space(@class), ' '), ' event-list-item ')]");
+            documento.DocumentNode.SelectNodes(
+                "//*[@id='event-list']" +
+                "//a[contains(" +
+                "concat(' ', normalize-space(@class), ' '), " +
+                "' event-list-item ')]");
 
-        List<Milonga> milongas = new();
+        List<Milonga> milongas =
+            new();
 
         if (tarjetas is null)
         {
@@ -26,39 +33,83 @@ public class HtmlExtractor
         foreach (HtmlNode tarjeta in tarjetas)
         {
             string link =
-                ObtenerLink(tarjeta);
+                ObtenerLink(
+                    tarjeta);
 
             string horarioClase =
-                ObtenerHorarioClase(tarjeta);
+                ObtenerHorarioClase(
+                    tarjeta);
 
-            Milonga milonga = new()
-            {
-                Id = ObtenerId(link),
-                Tipo = ObtenerTipo(tarjeta),
-                Nombre = ObtenerNombre(tarjeta),
-                Horario = ObtenerHorario(tarjeta),
-                Salon = ObtenerSalon(tarjeta),
-                Barrio = ObtenerBarrio(tarjeta),
-                Imagen = ObtenerImagen(tarjeta),
-                Link = link,
-                Cancelada = EstaCancelada(tarjeta),
-                Destacada = EstaDestacada(tarjeta),
-                Finalizada = EstaFinalizada(tarjeta),
-                Abierta = EstaAbierta(tarjeta),
-                HorarioClase = horarioClase,
-                TieneClase =
-                    !string.IsNullOrWhiteSpace(
-                        horarioClase),
-                ModalidadEntrada =
-                    ObtenerModalidadEntrada(tarjeta),
+            (string salon, string barrio) =
+                ObtenerUbicacion(
+                    tarjeta);
 
-                EventoEspecial =
-                    ObtenerEventoEspecial(tarjeta)
-            };
+            Milonga milonga =
+                new()
+                {
+                    Id =
+                        ObtenerId(
+                            link),
 
-            
+                    Tipo =
+                        ObtenerTipo(
+                            tarjeta),
 
-            milongas.Add(milonga);
+                    Nombre =
+                        ObtenerNombre(
+                            tarjeta),
+
+                    Horario =
+                        ObtenerHorario(
+                            tarjeta),
+
+                    Salon =
+                        salon,
+
+                    Barrio =
+                        barrio,
+
+                    Imagen =
+                        ObtenerImagen(
+                            tarjeta),
+
+                    Link =
+                        link,
+
+                    Cancelada =
+                        EstaCancelada(
+                            tarjeta),
+
+                    Destacada =
+                        EstaDestacada(
+                            tarjeta),
+
+                    Finalizada =
+                        EstaFinalizada(
+                            tarjeta),
+
+                    Abierta =
+                        EstaAbierta(
+                            tarjeta),
+
+                    HorarioClase =
+                        horarioClase,
+
+                    TieneClase =
+                        !string.IsNullOrWhiteSpace(
+                            horarioClase),
+
+                    ModalidadEntrada =
+                        ObtenerModalidadEntrada(
+                            tarjeta),
+
+                    EventoEspecial =
+                        ObtenerEventoEspecial(
+                            tarjeta)
+                };
+
+            milongas.Add(
+                milonga);
         }
 
         return milongas;
@@ -69,7 +120,8 @@ public class HtmlExtractor
     {
         HtmlNode? nodoTipo =
             tarjeta.SelectSingleNode(
-                ".//small[contains(@class,'text-uppercase')]");
+                ".//small[contains(" +
+                "@class,'text-uppercase')]");
 
         return LimpiarTexto(
             nodoTipo?.InnerText);
@@ -80,7 +132,8 @@ public class HtmlExtractor
     {
         HtmlNode? nodoNombre =
             tarjeta.SelectSingleNode(
-                ".//h4[contains(@class,'font-weight-bold')]");
+                ".//h4[contains(" +
+                "@class,'font-weight-bold')]");
 
         return LimpiarTexto(
             nodoNombre?.InnerText);
@@ -96,7 +149,8 @@ public class HtmlExtractor
         Match coincidencia =
             Regex.Match(
                 textoTarjeta,
-                @"\b\d{1,2}:\d{2}\s*-\s*(?:\d{1,2}:\d{2}|Medianoche)\b",
+                @"\b\d{1,2}:\d{2}\s*-\s*" +
+                @"(?:\d{1,2}:\d{2}|Medianoche)\b",
                 RegexOptions.IgnoreCase);
 
         return coincidencia.Success
@@ -104,31 +158,16 @@ public class HtmlExtractor
             : "";
     }
 
-    private static string ObtenerSalon(
-        HtmlNode tarjeta)
-    {
-        (string salon, string barrio) =
-            ObtenerUbicacion(tarjeta);
-
-        return salon;
-    }
-
-    private static string ObtenerBarrio(
-        HtmlNode tarjeta)
-    {
-        (string salon, string barrio) =
-            ObtenerUbicacion(tarjeta);
-
-        return barrio;
-    }
-
-    private static (string Salon, string Barrio)
+    private static (
+        string Salon,
+        string Barrio)
         ObtenerUbicacion(
             HtmlNode tarjeta)
     {
         HtmlNodeCollection? bloques =
             tarjeta.SelectNodes(
-                ".//div[contains(@class,'lh-20')]");
+                ".//div[contains(" +
+                "@class,'lh-20')]");
 
         if (bloques is null)
         {
@@ -138,8 +177,8 @@ public class HtmlExtractor
         foreach (HtmlNode bloque in bloques)
         {
             if (!bloque.InnerHtml.Contains(
-                "location-icon",
-                StringComparison.OrdinalIgnoreCase))
+                    "location-icon",
+                    StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
@@ -167,7 +206,8 @@ public class HtmlExtractor
             string[] lineas =
                 texto.Split(
                     '\n',
-                    StringSplitOptions.RemoveEmptyEntries);
+                    StringSplitOptions
+                        .RemoveEmptyEntries);
 
             if (lineas.Length == 0)
             {
@@ -178,7 +218,8 @@ public class HtmlExtractor
                 LimpiarTexto(
                     lineas[0]);
 
-            string barrio = "";
+            string barrio =
+                "";
 
             if (lineas.Length >= 2)
             {
@@ -194,7 +235,9 @@ public class HtmlExtractor
                         RegexOptions.IgnoreCase);
             }
 
-            return (salon, barrio);
+            return (
+                salon,
+                barrio);
         }
 
         return ("", "");
@@ -205,7 +248,8 @@ public class HtmlExtractor
     {
         HtmlNode? nodoImagen =
             tarjeta.SelectSingleNode(
-                ".//img[contains(@src,'/data_images/event/logo/')]");
+                ".//img[contains(" +
+                "@src,'/data_images/event/logo/')]");
 
         return HtmlEntity.DeEntitize(
             nodoImagen?.GetAttributeValue(
@@ -243,13 +287,13 @@ public class HtmlExtractor
                 : 0;
     }
 
-
     private static string ObtenerHorarioClase(
         HtmlNode tarjeta)
     {
         HtmlNode? iconoClase =
             tarjeta.SelectSingleNode(
-                ".//*[@name and contains(@name,'classes')]");
+                ".//*[@name and " +
+                "contains(@name,'classes')]");
 
         if (iconoClase is null)
         {
@@ -258,7 +302,11 @@ public class HtmlExtractor
 
         HtmlNode? bloqueClase =
             iconoClase.SelectSingleNode(
-                "ancestor::div[contains(concat(' ', normalize-space(@class), ' '), ' lh-20 ')][1]");
+                "ancestor::div[" +
+                "contains(" +
+                "concat(' ', normalize-space(@class), ' '), " +
+                "' lh-20 ')" +
+                "][1]");
 
         if (bloqueClase is null)
         {
@@ -268,49 +316,31 @@ public class HtmlExtractor
         Match coincidencia =
             Regex.Match(
                 bloqueClase.OuterHtml,
-                @"\b\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}\b");
+                @"\b\d{1,2}:\d{2}\s*-\s*" +
+                @"\d{1,2}:\d{2}\b");
 
         return coincidencia.Success
             ? coincidencia.Value
             : "";
     }
 
-    private static string LimpiarTexto(
-        string? texto)
-    {
-        if (string.IsNullOrWhiteSpace(texto))
-        {
-            return "";
-        }
-
-        string decodificado =
-            HtmlEntity.DeEntitize(
-                texto);
-
-        return string.Join(
-            " ",
-            decodificado.Split(
-                [' ', '\r', '\n', '\t'],
-                StringSplitOptions.RemoveEmptyEntries));
-    }
-
     private static string ObtenerModalidadEntrada(
-     HtmlNode tarjeta)
+        HtmlNode tarjeta)
     {
         string texto =
             LimpiarTexto(
                 tarjeta.InnerText);
 
         if (texto.Contains(
-            "A la gorra",
-            StringComparison.OrdinalIgnoreCase))
+                "A la gorra",
+                StringComparison.OrdinalIgnoreCase))
         {
             return "A la gorra";
         }
 
         if (texto.Contains(
-            "Gratis",
-            StringComparison.OrdinalIgnoreCase))
+                "Gratis",
+                StringComparison.OrdinalIgnoreCase))
         {
             return "Gratis";
         }
@@ -319,7 +349,7 @@ public class HtmlExtractor
     }
 
     private static string ObtenerEventoEspecial(
-    HtmlNode tarjeta)
+        HtmlNode tarjeta)
     {
         string texto =
             LimpiarTexto(
@@ -328,7 +358,11 @@ public class HtmlExtractor
         Match coincidencia =
             Regex.Match(
                 texto,
-                @"Artística\s*(.+?)(?=\s*(?:clases|\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}|$))",
+                @"Artística\s*(.+?)" +
+                @"(?=\s*(?:" +
+                @"clases|" +
+                @"\d{1,2}:\d{2}\s*-\s*" +
+                @"\d{1,2}:\d{2}|$))",
                 RegexOptions.IgnoreCase);
 
         if (!coincidencia.Success)
@@ -336,22 +370,26 @@ public class HtmlExtractor
             return "";
         }
 
-        return coincidencia.Groups[1].Value.Trim();
+        return coincidencia
+            .Groups[1]
+            .Value
+            .Trim();
     }
 
     private static bool EstaDestacada(
-    HtmlNode tarjeta)
+        HtmlNode tarjeta)
     {
         return tarjeta
             .GetClasses()
-            .Any(clase =>
-                clase.Equals(
-                    "highlighted-wrapper",
-                    StringComparison.OrdinalIgnoreCase));
+            .Any(
+                clase =>
+                    clase.Equals(
+                        "highlighted-wrapper",
+                        StringComparison.OrdinalIgnoreCase));
     }
 
     private static bool EstaFinalizada(
-    HtmlNode tarjeta)
+        HtmlNode tarjeta)
     {
         string texto =
             LimpiarTexto(
@@ -361,6 +399,7 @@ public class HtmlExtractor
             "FINALIZÓ",
             StringComparison.OrdinalIgnoreCase);
     }
+
     private static bool EstaCancelada(
         HtmlNode tarjeta)
     {
@@ -374,7 +413,7 @@ public class HtmlExtractor
     }
 
     private static bool EstaAbierta(
-    HtmlNode tarjeta)
+        HtmlNode tarjeta)
     {
         string texto =
             LimpiarTexto(
@@ -383,5 +422,26 @@ public class HtmlExtractor
         return texto.Contains(
             "Abierto",
             StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string LimpiarTexto(
+        string? texto)
+    {
+        if (string.IsNullOrWhiteSpace(
+                texto))
+        {
+            return "";
+        }
+
+        string decodificado =
+            HtmlEntity.DeEntitize(
+                texto);
+
+        return string.Join(
+            " ",
+            decodificado.Split(
+                [' ', '\r', '\n', '\t'],
+                StringSplitOptions
+                    .RemoveEmptyEntries));
     }
 }

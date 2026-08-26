@@ -1,5 +1,11 @@
+# Visual Studio
 .vs/
-**/bin/
-**/obj/
 *.user
 *.suo
+
+# Build
+**/bin/
+**/obj/
+
+# Datos generados por la aplicación
+detalles-cache.json
