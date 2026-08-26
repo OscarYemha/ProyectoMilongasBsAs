@@ -3,10 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.37111.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milongas.Extractor", "Milongas.Extractor\Milongas.Extractor.csproj", "{34014CB8-343B-4FC9-BCB4-ACEDD43C99E1}"
-EndProject
+
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milongas.App", "Milongas.App\Milongas.App.csproj", "{FE3C625F-84F2-4529-92D6-056581BA9F26}"
 EndProject
+
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milongas.Extractor", "Milongas.Extractor\Milongas.Extractor.csproj", "{34014CB8-343B-4FC9-BCB4-ACEDD43C99E1}"
+EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

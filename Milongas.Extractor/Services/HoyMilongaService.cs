@@ -92,73 +92,68 @@ public class HoyMilongaService : IAsyncDisposable
     }
 
     public async Task CompletarDetallesAsync(
-        List<Milonga> milongas)
+     List<Milonga> milongas)
     {
         Dictionary<int, DetalleMilongaCache> cache =
-            await detalleCacheService
-                .CargarAsync();
+            await detalleCacheService.CargarAsync();
 
         bool cacheModificada =
             false;
 
-        foreach (Milonga milonga in milongas)
+        try
         {
-            // Si ya tenemos la ficha en caché
-            // y contiene coordenadas válidas,
-            // evitamos volver a navegar.
-            if (cache.TryGetValue(
-                    milonga.Id,
-                    out DetalleMilongaCache? detalleGuardado))
+            foreach (Milonga milonga in milongas)
             {
-                bool cacheValida =
-                    detalleGuardado.Latitud.HasValue &&
-                    detalleGuardado.Longitud.HasValue;
-
-                if (cacheValida)
+                if (cache.TryGetValue(
+                        milonga.Id,
+                        out DetalleMilongaCache? detalleGuardado))
                 {
-                    milonga.Direccion =
-                        detalleGuardado.Direccion;
+                    bool cacheValida =
+                        detalleGuardado.Latitud.HasValue &&
+                        detalleGuardado.Longitud.HasValue;
 
-                    milonga.Latitud =
-                        detalleGuardado.Latitud;
+                    if (cacheValida)
+                    {
+                        milonga.Direccion =
+                            detalleGuardado.Direccion;
 
-                    milonga.Longitud =
-                        detalleGuardado.Longitud;
+                        milonga.Latitud =
+                            detalleGuardado.Latitud;
 
-                    continue;
+                        milonga.Longitud =
+                            detalleGuardado.Longitud;
+
+                        continue;
+                    }
                 }
+
+                await CompletarDetalleAsync(
+                    milonga);
+
+                cache[milonga.Id] =
+                    new DetalleMilongaCache
+                    {
+                        Direccion =
+                            milonga.Direccion,
+
+                        Latitud =
+                            milonga.Latitud,
+
+                        Longitud =
+                            milonga.Longitud
+                    };
+
+                cacheModificada =
+                    true;
             }
-
-            await CompletarDetalleAsync(
-                milonga);
-
-            DetalleMilongaCache nuevoDetalle =
-                new()
-                {
-                    Direccion =
-                        milonga.Direccion,
-
-                    Latitud =
-                        milonga.Latitud,
-
-                    Longitud =
-                        milonga.Longitud
-                };
-
-            cache[milonga.Id] =
-                nuevoDetalle;
-
-            cacheModificada =
-                true;
         }
-
-        // Evitamos escribir el archivo
-        // cuando la caché no cambió.
-        if (cacheModificada)
+        finally
         {
-            await detalleCacheService
-                .GuardarAsync(
+            if (cacheModificada)
+            {
+                await detalleCacheService.GuardarAsync(
                     cache);
+            }
         }
     }
 
