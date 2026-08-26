@@ -1,5 +1,4 @@
 ﻿using Milongas.Extractor.Models;
-using System.Diagnostics;
 using System.Text.Json;
 
 namespace Milongas.Extractor.Services;
@@ -10,45 +9,60 @@ public class DetalleCacheService
 
     public DetalleCacheService()
     {
-        rutaArchivo = Path.Combine(
-            AppContext.BaseDirectory,
-            "detalles-cache.json");
+        rutaArchivo =
+            Path.Combine(
+                AppContext.BaseDirectory,
+                "detalles-cache.json");
     }
 
-    public async Task<Dictionary<int, DetalleMilongaCache>> CargarAsync()
+    public async Task<
+        Dictionary<int, DetalleMilongaCache>>
+        CargarAsync()
     {
         if (!File.Exists(rutaArchivo))
         {
-            return new Dictionary<int, DetalleMilongaCache>();
+            return new Dictionary<
+                int,
+                DetalleMilongaCache>();
         }
 
         string json =
-            await File.ReadAllTextAsync(rutaArchivo);
+            await File.ReadAllTextAsync(
+                rutaArchivo);
 
-        JsonSerializerOptions opciones = new()
-        {
-            PropertyNameCaseInsensitive = true
-        };
+        JsonSerializerOptions opciones =
+            new()
+            {
+                PropertyNameCaseInsensitive =
+                    true
+            };
 
         Dictionary<int, DetalleMilongaCache>? cache =
             JsonSerializer.Deserialize<
-                Dictionary<int, DetalleMilongaCache>>(
+                Dictionary<
+                    int,
+                    DetalleMilongaCache>>(
                 json,
                 opciones);
 
         return cache ??
-            new Dictionary<int, DetalleMilongaCache>();
+            new Dictionary<
+                int,
+                DetalleMilongaCache>();
     }
 
     public async Task GuardarAsync(
         Dictionary<int, DetalleMilongaCache> cache)
     {
-        JsonSerializerOptions opciones = new()
-        {
-            WriteIndented = true,
-            PropertyNamingPolicy =
-                JsonNamingPolicy.CamelCase
-        };
+        JsonSerializerOptions opciones =
+            new()
+            {
+                WriteIndented =
+                    true,
+
+                PropertyNamingPolicy =
+                    JsonNamingPolicy.CamelCase
+            };
 
         string json =
             JsonSerializer.Serialize(

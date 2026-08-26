@@ -5,9 +5,14 @@ namespace Milongas.Extractor.Services;
 
 public class BrowserService : IAsyncDisposable
 {
-    private const int TimeoutAgendaMs = 30_000;
-    private const int TimeoutDetalleMs = 15_000;
-    private const int TimeoutListaVisibleMs = 5_000;
+    private const int TimeoutAgendaMs =
+        30_000;
+
+    private const int TimeoutDetalleMs =
+        15_000;
+
+    private const int TimeoutListaVisibleMs =
+        5_000;
 
     private IPlaywright? playwright;
     private IBrowser? browser;
@@ -38,48 +43,6 @@ public class BrowserService : IAsyncDisposable
 
         paginaDetalle =
             await browser.NewPageAsync();
-    }
-
-    public async Task<AgendaWebResultado>
-        ObtenerHtmlDiasVisiblesAsync(
-            string url,
-            DateOnly fechaReferencia)
-    {
-        Dictionary<DateOnly, string> htmlPorFecha =
-            new();
-
-        DateOnly? fechaActiva = null;
-
-        await foreach (
-            AgendaDiaWeb dia
-            in ObtenerDiasVisiblesProgresivoAsync(
-                url,
-                fechaReferencia))
-        {
-            htmlPorFecha[dia.Fecha] =
-                dia.Html;
-
-            if (dia.EsFechaActiva)
-            {
-                fechaActiva =
-                    dia.Fecha;
-            }
-        }
-
-        if (!fechaActiva.HasValue)
-        {
-            throw new InvalidOperationException(
-                "No se pudo determinar la fecha activa de Hoy Milonga.");
-        }
-
-        return new AgendaWebResultado
-        {
-            FechaActiva =
-                fechaActiva.Value,
-
-            HtmlPorFecha =
-                htmlPorFecha
-        };
     }
 
     public async IAsyncEnumerable<AgendaDiaWeb>
@@ -498,8 +461,8 @@ public class BrowserService : IAsyncDisposable
     }
 
     public async Task<string>
-    ObtenerHtmlDetalleAsync(
-        string urlDetalle)
+        ObtenerHtmlDetalleAsync(
+            string urlDetalle)
     {
         await InicializarAsync();
 
@@ -516,16 +479,16 @@ public class BrowserService : IAsyncDisposable
 
         await paginaActual.WaitForFunctionAsync(
             @"() => {
-            const body =
-                document.body;
+                const body =
+                    document.body;
 
-            return (
-                body !== null &&
-                body.innerText
-                    .trim()
-                    .length > 100
-            );
-        }",
+                return (
+                    body !== null &&
+                    body.innerText
+                        .trim()
+                        .length > 100
+                );
+            }",
             null,
             new PageWaitForFunctionOptions
             {
@@ -537,8 +500,7 @@ public class BrowserService : IAsyncDisposable
             .ContentAsync();
     }
 
-    private IPage
-        ObtenerPaginaAgenda()
+    private IPage ObtenerPaginaAgenda()
     {
         if (paginaAgenda is null)
         {
@@ -549,8 +511,7 @@ public class BrowserService : IAsyncDisposable
         return paginaAgenda;
     }
 
-    private IPage
-        ObtenerPaginaDetalle()
+    private IPage ObtenerPaginaDetalle()
     {
         if (paginaDetalle is null)
         {
@@ -626,10 +587,12 @@ public class BrowserService : IAsyncDisposable
 
         if (browser is not null)
         {
-            await browser.DisposeAsync();
+            await browser
+                .DisposeAsync();
         }
 
-        playwright?.Dispose();
+        playwright?
+            .Dispose();
 
         paginaAgenda =
             null;

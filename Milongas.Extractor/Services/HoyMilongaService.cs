@@ -1,15 +1,12 @@
 ﻿using Milongas.Extractor.Models;
+using System.Diagnostics;
 
 namespace Milongas.Extractor.Services;
 
 public class HoyMilongaService : IAsyncDisposable
 {
-    private const string UrlBase =
-        "https://www.hoy-milonga.com";
-
     private readonly BrowserService browserService;
     private readonly HtmlExtractor htmlExtractor;
-    private readonly JsonExporter jsonExporter;
     private readonly MilongaDetalleExtractor detalleExtractor;
     private readonly DetalleCacheService detalleCacheService;
 
@@ -21,56 +18,11 @@ public class HoyMilongaService : IAsyncDisposable
         htmlExtractor =
             new HtmlExtractor();
 
-        jsonExporter =
-            new JsonExporter();
-
         detalleExtractor =
             new MilongaDetalleExtractor();
 
         detalleCacheService =
             new DetalleCacheService();
-    }
-
-    public async Task<string> ActualizarAgendaAsync(
-        string url,
-        DateOnly fechaReferencia)
-    {
-        AgendaWebResultado resultadoWeb =
-            await browserService
-                .ObtenerHtmlDiasVisiblesAsync(
-                    url,
-                    fechaReferencia);
-
-        List<Milonga> milongas =
-            ExtraerMilongas(
-                resultadoWeb.HtmlPorFecha);
-
-        return await jsonExporter.GuardarAsync(
-            milongas);
-    }
-
-    public async Task<AgendaResultado> ObtenerAgendaAsync(
-        string url,
-        DateOnly fechaReferencia)
-    {
-        AgendaWebResultado resultadoWeb =
-            await browserService
-                .ObtenerHtmlDiasVisiblesAsync(
-                    url,
-                    fechaReferencia);
-
-        List<Milonga> milongas =
-            ExtraerMilongas(
-                resultadoWeb.HtmlPorFecha);
-
-        return new AgendaResultado
-        {
-            FechaActiva =
-                resultadoWeb.FechaActiva,
-
-            Milongas =
-                milongas
-        };
     }
 
     public async IAsyncEnumerable<AgendaResultado>
@@ -89,9 +41,25 @@ public class HoyMilongaService : IAsyncDisposable
                 htmlExtractor.ObtenerMilongas(
                     diaWeb.Html);
 
-            AsignarFecha(
-                milongasDelDia,
-                diaWeb.Fecha);
+            Debug.WriteLine(
+                $"DÍA {diaWeb.Fecha:dd/MM/yyyy} - " +
+                $"{milongasDelDia.Count} milongas");
+
+            foreach (
+                Milonga milonga
+                in milongasDelDia.Take(3))
+            {
+                Debug.WriteLine(
+                    $"    {milonga.Nombre}");
+            }
+
+            foreach (
+                Milonga milonga
+                in milongasDelDia)
+            {
+                milonga.Fecha =
+                    diaWeb.Fecha;
+            }
 
             yield return new AgendaResultado
             {
@@ -110,7 +78,7 @@ public class HoyMilongaService : IAsyncDisposable
         Milonga milonga)
     {
         string urlDetalle =
-            UrlBase +
+            "https://www.hoy-milonga.com" +
             milonga.Link;
 
         string htmlDetalle =
@@ -127,135 +95,150 @@ public class HoyMilongaService : IAsyncDisposable
         List<Milonga> milongas)
     {
         Dictionary<int, DetalleMilongaCache> cache =
-            await detalleCacheService.CargarAsync();
+            await detalleCacheService
+                .CargarAsync();
 
         bool cacheModificada =
             false;
 
         foreach (Milonga milonga in milongas)
         {
+            // Si ya tenemos la ficha en caché
+            // y contiene coordenadas válidas,
+            // evitamos volver a navegar.
             if (cache.TryGetValue(
                     milonga.Id,
-                    out DetalleMilongaCache? detalleGuardado) &&
-                CacheValida(detalleGuardado))
+                    out DetalleMilongaCache? detalleGuardado))
             {
-                AplicarDetalleCache(
-                    milonga,
-                    detalleGuardado);
+                bool cacheValida =
+                    detalleGuardado.Latitud.HasValue &&
+                    detalleGuardado.Longitud.HasValue;
 
-                continue;
+                if (cacheValida)
+                {
+                    milonga.Direccion =
+                        detalleGuardado.Direccion;
+
+                    milonga.Latitud =
+                        detalleGuardado.Latitud;
+
+                    milonga.Longitud =
+                        detalleGuardado.Longitud;
+
+                    continue;
+                }
             }
 
             await CompletarDetalleAsync(
                 milonga);
 
+            DetalleMilongaCache nuevoDetalle =
+                new()
+                {
+                    Direccion =
+                        milonga.Direccion,
+
+                    Latitud =
+                        milonga.Latitud,
+
+                    Longitud =
+                        milonga.Longitud
+                };
+
             cache[milonga.Id] =
-                CrearDetalleCache(
-                    milonga);
+                nuevoDetalle;
 
             cacheModificada =
                 true;
         }
 
+        // Evitamos escribir el archivo
+        // cuando la caché no cambió.
         if (cacheModificada)
         {
-            await detalleCacheService.GuardarAsync(
-                cache);
+            await detalleCacheService
+                .GuardarAsync(
+                    cache);
         }
     }
 
-    public async Task<MilongaDetalle> ObtenerDetalleAsync(
+    public async Task<MilongaDetalle>
+    ObtenerDetalleAsync(
         Milonga milonga)
     {
         string urlDetalle =
-            UrlBase +
+            "https://www.hoy-milonga.com" +
             milonga.Link;
 
-        string htmlDetalle =
-            await browserService
-                .ObtenerHtmlDetalleAsync(
-                    urlDetalle);
+        const int maxIntentos = 3;
 
-        return detalleExtractor.ObtenerDetalle(
-            htmlDetalle);
-    }
-
-    private List<Milonga> ExtraerMilongas(
-        Dictionary<DateOnly, string> htmlPorFecha)
-    {
-        List<Milonga> resultado =
+        MilongaDetalle ultimoDetalle =
             new();
 
-        foreach (
-            KeyValuePair<DateOnly, string> item
-            in htmlPorFecha)
+        for (int intento = 1;
+             intento <= maxIntentos;
+             intento++)
         {
-            List<Milonga> milongasDelDia =
-                htmlExtractor.ObtenerMilongas(
-                    item.Value);
+            string htmlDetalle =
+                await browserService
+                    .ObtenerHtmlDetalleAsync(
+                        urlDetalle);
 
-            AsignarFecha(
-                milongasDelDia,
-                item.Key);
+            ultimoDetalle =
+                detalleExtractor.ObtenerDetalle(
+                    htmlDetalle);
 
-            resultado.AddRange(
-                milongasDelDia);
+            if (DetalleTieneInformacion(
+                    ultimoDetalle))
+            {
+                return ultimoDetalle;
+            }
+
+            if (intento < maxIntentos)
+            {
+                await Task.Delay(
+                    700);
+            }
         }
 
-        return resultado;
+        return ultimoDetalle;
     }
 
-    private static void AsignarFecha(
-        List<Milonga> milongas,
-        DateOnly fecha)
-    {
-        foreach (Milonga milonga in milongas)
-        {
-            milonga.Fecha =
-                fecha;
-        }
-    }
-
-    private static bool CacheValida(
-        DetalleMilongaCache detalle)
+    private static bool DetalleTieneInformacion(
+    MilongaDetalle detalle)
     {
         return
-            detalle.Latitud.HasValue &&
-            detalle.Longitud.HasValue;
-    }
-
-    private static void AplicarDetalleCache(
-        Milonga milonga,
-        DetalleMilongaCache detalle)
-    {
-        milonga.Direccion =
-            detalle.Direccion;
-
-        milonga.Latitud =
-            detalle.Latitud;
-
-        milonga.Longitud =
-            detalle.Longitud;
-    }
-
-    private static DetalleMilongaCache CrearDetalleCache(
-        Milonga milonga)
-    {
-        return new DetalleMilongaCache
-        {
-            Direccion =
-                milonga.Direccion,
-
-            Latitud =
-                milonga.Latitud,
-
-            Longitud =
-                milonga.Longitud
-        };
+            !string.IsNullOrWhiteSpace(
+                detalle.Direccion) ||
+            !string.IsNullOrWhiteSpace(
+                detalle.Organizadores) ||
+            !string.IsNullOrWhiteSpace(
+                detalle.Estado) ||
+            !string.IsNullOrWhiteSpace(
+                detalle.Descripcion) ||
+            !string.IsNullOrWhiteSpace(
+                detalle.ImagenDetalle) ||
+            !string.IsNullOrWhiteSpace(
+                detalle.Foto) ||
+            !string.IsNullOrWhiteSpace(
+                detalle.LinkMapa) ||
+            !string.IsNullOrWhiteSpace(
+                detalle.Facebook) ||
+            !string.IsNullOrWhiteSpace(
+                detalle.Instagram) ||
+            !string.IsNullOrWhiteSpace(
+                detalle.WhatsApp) ||
+            !string.IsNullOrWhiteSpace(
+                detalle.Telefono) ||
+            !string.IsNullOrWhiteSpace(
+                detalle.Email) ||
+            !string.IsNullOrWhiteSpace(
+                detalle.SitioWeb);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await browserService.DisposeAsync();
+        await browserService
+            .DisposeAsync();
     }
 }
