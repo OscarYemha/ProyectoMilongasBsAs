@@ -7,6 +7,9 @@ public partial class MilongaCard : UserControl
     private readonly Func<Milonga, Task<MilongaDetalle>>
         obtenerDetalleAsync;
 
+    private readonly Func<bool>
+        puedeAbrirDetalle;
+
     private Milonga? milonga;
     private Color colorBorde =
     Color.FromArgb(225, 225, 225);
@@ -21,12 +24,17 @@ public partial class MilongaCard : UserControl
     private const int MargenDerecho = 20;
 
     public MilongaCard(
-        Func<Milonga, Task<MilongaDetalle>> obtenerDetalleAsync)
+    Func<Milonga, Task<MilongaDetalle>>
+        obtenerDetalleAsync,
+    Func<bool> puedeAbrirDetalle)
     {
         InitializeComponent();
 
         this.obtenerDetalleAsync =
             obtenerDetalleAsync;
+
+        this.puedeAbrirDetalle =
+            puedeAbrirDetalle;
 
         DoubleBuffered = true;
         ResizeRedraw = true;
@@ -324,6 +332,18 @@ public partial class MilongaCard : UserControl
     {
         if (milonga is null)
         {
+            return;
+        }
+
+        if (!puedeAbrirDetalle())
+        {
+            MessageBox.Show(
+                "La agenda todavía se está cargando.\n" +
+                "Esperá a que finalice para abrir el detalle.",
+                "Cargando agenda",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+
             return;
         }
 

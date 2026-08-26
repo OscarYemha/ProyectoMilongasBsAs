@@ -26,6 +26,7 @@ public partial class FormMilongas : Form
     private bool actualizandoFiltros;
     private bool agendaCargada;
     private bool actualizandoInterfaz;
+    private bool agendaCompletaCargada;
 
     private const string Url =
         "https://www.hoy-milonga.com/buenos-aires/es/milongas";
@@ -87,6 +88,9 @@ public partial class FormMilongas : Form
         agendaCargada =
             false;
 
+        agendaCompletaCargada =
+            false;
+
         fechaActivaWeb =
             null;
 
@@ -146,6 +150,9 @@ public partial class FormMilongas : Form
                 }
             }
 
+            agendaCompletaCargada =
+                true;
+
             ActualizarFiltrosFinales();
         }
         catch (PlaywrightException ex)
@@ -179,7 +186,7 @@ public partial class FormMilongas : Form
                 "Cargar agenda";
 
             HabilitarControlesAgenda(
-                agendaCargada);
+                agendaCompletaCargada);
         }
     }
 
@@ -514,17 +521,14 @@ public partial class FormMilongas : Form
     private void ActualizarTabla(
      List<Milonga> milongas)
     {
-        Debug.WriteLine(
-       $"RENDER TARJETAS - {DateTime.Now:HH:mm:ss.fff} - " +
-       $"{milongas.Count} milongas");
-
         FlpMilongas.Controls.Clear();
 
         foreach (Milonga milonga in milongas)
         {
             MilongaCard card =
                 new MilongaCard(
-                    ObtenerDetalleSeguroAsync);
+                    ObtenerDetalleSeguroAsync,
+                    () => agendaCompletaCargada);
 
             card.CargarMilonga(
                 milonga);

@@ -5,6 +5,10 @@ namespace Milongas.Extractor.Services;
 
 public class BrowserService : IAsyncDisposable
 {
+    private const int TimeoutAgendaMs = 30_000;
+    private const int TimeoutDetalleMs = 15_000;
+    private const int TimeoutListaVisibleMs = 5_000;
+
     private IPlaywright? playwright;
     private IBrowser? browser;
 
@@ -104,7 +108,7 @@ public class BrowserService : IAsyncDisposable
                     WaitForSelectorState.Visible,
 
                 Timeout =
-                    30_000
+                    TimeoutAgendaMs
             });
 
         ILocator botonesDias =
@@ -131,7 +135,7 @@ public class BrowserService : IAsyncDisposable
                     WaitForSelectorState.Visible,
 
                 Timeout =
-                    30_000
+                    TimeoutAgendaMs
             });
 
         int indiceActivo =
@@ -206,7 +210,7 @@ public class BrowserService : IAsyncDisposable
                             WaitForSelectorState.Visible,
 
                         Timeout =
-                            30_000
+                            TimeoutAgendaMs
                     });
 
                 string htmlAnterior =
@@ -240,7 +244,7 @@ public class BrowserService : IAsyncDisposable
                         WaitForSelectorState.Visible,
 
                     Timeout =
-                        30_000
+                        TimeoutAgendaMs
                 });
 
             string html =
@@ -362,7 +366,7 @@ public class BrowserService : IAsyncDisposable
             new PageWaitForFunctionOptions
             {
                 Timeout =
-                    30_000
+                    TimeoutAgendaMs
             });
     }
 
@@ -417,7 +421,7 @@ public class BrowserService : IAsyncDisposable
             new PageWaitForFunctionOptions
             {
                 Timeout =
-                    30_000
+                    TimeoutAgendaMs
             });
     }
 
@@ -459,7 +463,7 @@ public class BrowserService : IAsyncDisposable
                         WaitForSelectorState.Visible,
 
                     Timeout =
-                        5_000
+                        TimeoutListaVisibleMs
                 });
 
             string htmlActual =
@@ -494,8 +498,8 @@ public class BrowserService : IAsyncDisposable
     }
 
     public async Task<string>
-        ObtenerHtmlDetalleAsync(
-            string urlDetalle)
+    ObtenerHtmlDetalleAsync(
+        string urlDetalle)
     {
         await InicializarAsync();
 
@@ -512,21 +516,21 @@ public class BrowserService : IAsyncDisposable
 
         await paginaActual.WaitForFunctionAsync(
             @"() => {
-                const body =
-                    document.body;
+            const body =
+                document.body;
 
-                return (
-                    body !== null &&
-                    body.innerText
-                        .trim()
-                        .length > 100
-                );
-            }",
+            return (
+                body !== null &&
+                body.innerText
+                    .trim()
+                    .length > 100
+            );
+        }",
             null,
             new PageWaitForFunctionOptions
             {
                 Timeout =
-                    15_000
+                    TimeoutDetalleMs
             });
 
         return await paginaActual
