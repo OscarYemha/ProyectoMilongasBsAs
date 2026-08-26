@@ -1,4 +1,4 @@
-﻿# Proyecto Milongas
+﻿# Agenda de Milongas de Buenos Aires
 
 Aplicación de escritorio desarrollada en C# y .NET 8 para consultar, filtrar y explorar la agenda de milongas de Buenos Aires.
 
@@ -92,6 +92,17 @@ Milongas.App
 ```
 
 La agenda se obtiene progresivamente. El primer día puede mostrarse antes de completar la carga del resto, mientras los siguientes eventos se procesan y precargan.
+
+## Desafíos técnicos
+
+Durante el desarrollo se abordaron varios problemas relacionados con la obtención y procesamiento de datos dinámicos:
+
+- **Carga progresiva:** la agenda se procesa por día para poder mostrar resultados antes de finalizar la carga completa.
+- **Contenido dinámico:** Playwright permite navegar e interactuar con el sitio antes de procesar el HTML con HtmlAgilityPack.
+- **Carga de detalles:** la información disponible únicamente en la página individual de cada evento se obtiene bajo demanda y se precarga cuando es posible.
+- **Caché local:** determinados datos de detalle se almacenan localmente para evitar navegaciones repetidas y reducir los tiempos de carga.
+- **Concurrencia y asincronismo:** las operaciones de navegación y actualización de la interfaz se coordinan de forma asincrónica para mantener la aplicación responsiva.
+- **Búsqueda con debounce:** las búsquedas de texto esperan brevemente antes de actualizar los resultados, evitando reprocesar la agenda por cada tecla presionada.
 
 ## Distancias
 
