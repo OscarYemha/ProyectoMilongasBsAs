@@ -42,8 +42,9 @@ public class HoyMilongaService : IAsyncDisposable
                     diaWeb.Html);
 
             Debug.WriteLine(
-                $"DÍA {diaWeb.Fecha:dd/MM/yyyy} - " +
-                $"{milongasDelDia.Count} milongas");
+    $"DÍA {diaWeb.Fecha:dd/MM/yyyy} - " +
+    $"ACTIVO: {diaWeb.EsFechaActiva} - " +
+    $"{milongasDelDia.Count} milongas");
 
             foreach (
                 Milonga milonga
@@ -157,46 +158,21 @@ public class HoyMilongaService : IAsyncDisposable
         }
     }
 
-    public async Task<MilongaDetalle>
-    ObtenerDetalleAsync(
-        Milonga milonga)
+    public async Task<MilongaDetalle> ObtenerDetalleAsync(
+    Milonga milonga)
     {
         string urlDetalle =
             "https://www.hoy-milonga.com" +
             milonga.Link;
 
-        const int maxIntentos = 3;
+        string htmlDetalle =
+            await browserService
+                .ObtenerHtmlDetalleAsync(
+                    urlDetalle);
 
-        MilongaDetalle ultimoDetalle =
-            new();
-
-        for (int intento = 1;
-             intento <= maxIntentos;
-             intento++)
-        {
-            string htmlDetalle =
-                await browserService
-                    .ObtenerHtmlDetalleAsync(
-                        urlDetalle);
-
-            ultimoDetalle =
-                detalleExtractor.ObtenerDetalle(
-                    htmlDetalle);
-
-            if (DetalleTieneInformacion(
-                    ultimoDetalle))
-            {
-                return ultimoDetalle;
-            }
-
-            if (intento < maxIntentos)
-            {
-                await Task.Delay(
-                    300);
-            }
-        }
-
-        return ultimoDetalle;
+        return detalleExtractor
+            .ObtenerDetalle(
+                htmlDetalle);
     }
 
     private static bool DetalleTieneInformacion(

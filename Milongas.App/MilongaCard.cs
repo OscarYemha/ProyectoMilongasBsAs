@@ -53,7 +53,7 @@ public partial class MilongaCard : UserControl
         LblNombre.Click += MilongaCard_Click;
         LblHorario.Click += MilongaCard_Click;
         LblUbicacion.Click += MilongaCard_Click;
-        LblClaseDistancia.Click += MilongaCard_Click;
+        LblClase.Click += MilongaCard_Click;
         LblEstado.Click += MilongaCard_Click;
         LblModalidadEntrada.Click += MilongaCard_Click;
         LblEventoEspecial.Click += MilongaCard_Click;
@@ -207,7 +207,7 @@ public partial class MilongaCard : UserControl
             LblUbicacion.Visible =
                 false;
 
-            LblClaseDistancia.Visible =
+            LblClase.Visible =
                 false;
 
             PicImagen.Visible = 
@@ -235,7 +235,7 @@ public partial class MilongaCard : UserControl
         LblUbicacion.Visible =
             true;
 
-        LblClaseDistancia.Visible =
+        LblClase.Visible =
             true;
 
         LblTipo.Text =
@@ -250,8 +250,8 @@ public partial class MilongaCard : UserControl
         LblUbicacion.Text =
             ObtenerUbicacion(milonga);
 
-        LblClaseDistancia.Text =
-            ObtenerClaseDistancia(milonga);
+        LblClase.Text =
+            ObtenerClase(milonga);
 
         CargarImagen(milonga);
 
@@ -284,22 +284,12 @@ public partial class MilongaCard : UserControl
         return milonga.Barrio;
     }
 
-    private static string ObtenerClaseDistancia(
-        Milonga milonga)
+    private static string ObtenerClase(
+    Milonga milonga)
     {
-        string clase =
-            milonga.TieneClase
-                ? $"Clase {milonga.HorarioClase}"
-                : "Sin clase";
-
-        if (milonga.DistanciaKm.HasValue)
-        {
-            return
-                $"{clase} · " +
-                $"{milonga.DistanciaKm.Value:0.0} km";
-        }
-
-        return clase;
+        return milonga.TieneClase
+            ? $"Clase {milonga.HorarioClase}"
+            : "Sin clase";
     }
 
     private void CargarImagen(
@@ -328,7 +318,7 @@ public partial class MilongaCard : UserControl
             urlImagen);
     }
 
-    private void AbrirDetalle()
+    private async void AbrirDetalle()
     {
         if (milonga is null)
         {
@@ -338,8 +328,8 @@ public partial class MilongaCard : UserControl
         if (!puedeAbrirDetalle())
         {
             MessageBox.Show(
-                "La agenda todavía se está cargando.\n" +
-                "Esperá a que finalice para abrir el detalle.",
+                "La agenda todavía se está terminando de preparar.\n" +
+                "Intentá nuevamente en unos segundos.",
                 "Cargando agenda",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
@@ -347,12 +337,36 @@ public partial class MilongaCard : UserControl
             return;
         }
 
-        FormDetalleMilonga formulario =
-            new FormDetalleMilonga(
-                milonga,
-                obtenerDetalleAsync);
+        try
+        {
+            UseWaitCursor =
+                true;
 
-        formulario.ShowDialog();
+            MilongaDetalle detalle =
+                await obtenerDetalleAsync(
+                    milonga);
+
+            FormDetalleMilonga formulario =
+                new FormDetalleMilonga(
+                    milonga,
+                    detalle);
+
+            formulario.ShowDialog();
+        }
+        catch (InvalidOperationException)
+        {
+            MessageBox.Show(
+                "Los detalles no están disponibles temporalmente.\n" +
+                "La agenda puede seguir utilizándose normalmente.",
+                "Detalle no disponible",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+        finally
+        {
+            UseWaitCursor =
+                false;
+        }
     }
 
     private void MilongaCard_Click(
@@ -472,7 +486,7 @@ public partial class MilongaCard : UserControl
         LblNombre,
         LblHorario,
         LblUbicacion,
-        LblClaseDistancia,
+        LblClase,
         LblModalidadEntrada,
         LblEventoEspecial
     }
@@ -515,7 +529,7 @@ public partial class MilongaCard : UserControl
             anchoContenido);
 
         ConfigurarAnchoLabel(
-            LblClaseDistancia,
+            LblClase,
             anchoContenido);
 
         ConfigurarAnchoLabel(
@@ -534,7 +548,7 @@ public partial class MilongaCard : UserControl
         LblNombre,
         LblHorario,
         LblUbicacion,
-        LblClaseDistancia,
+        LblClase,
         LblModalidadEntrada,
         LblEventoEspecial
     };

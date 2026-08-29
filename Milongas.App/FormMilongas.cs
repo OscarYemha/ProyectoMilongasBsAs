@@ -35,10 +35,6 @@ public partial class FormMilongas : Form
     private List<Milonga> agenda =
         new();
 
-    private readonly HashSet<Milonga>
-        milongasConDetalleCargado =
-            new();
-
     private DateOnly? fechaActivaWeb;
 
     private bool actualizandoFechas;
@@ -52,6 +48,8 @@ public partial class FormMilongas : Form
     // Finalizó la carga y precarga
     // de todos los días disponibles.
     private bool agendaCompletaCargada;
+
+    private DateTime? detalleDisponibleDesde;
 
     public FormMilongas()
     {
@@ -72,12 +70,23 @@ public partial class FormMilongas : Form
         HabilitarControlesAgenda(
             false);
 
-        FormClosed +=
-            Form1_FormClosed;
+        FormClosing +=
+            FormMilongas_FormClosing;
 
         FlpMilongas.Resize +=
             (_, _) =>
                 AjustarAnchoTarjetas();
+    }
+
+    private void FormMilongas_FormClosing(object? sender,
+        FormClosingEventArgs e)
+    {
+        if(e.CloseReason ==
+            CloseReason.UserClosing)
+        {
+            e.Cancel = true;
+            Hide();
+        }
     }
 
     private async void BtnCargar_Click(
@@ -107,9 +116,6 @@ public partial class FormMilongas : Form
 
         agenda =
             new List<Milonga>();
-
-        milongasConDetalleCargado
-            .Clear();
 
         agendaCargada =
             false;
@@ -169,15 +175,13 @@ public partial class FormMilongas : Form
                     primerDiaMostrado =
                         true;
                 }
-                else
-                {
-                    await PrecargarDetallesAsync(
-                        resultadoDia.Milongas);
-                }
             }
 
             agendaCompletaCargada =
                 true;
+
+            detalleDisponibleDesde =
+                DateTime.Now.AddSeconds(3);
 
             ActualizarFiltrosFinales();
         }
@@ -385,9 +389,6 @@ public partial class FormMilongas : Form
         CmbOrden.Items.Add(
             "Horario");
 
-        CmbOrden.Items.Add(
-            "Distancia");
-
         CmbOrden.SelectedIndex =
             0;
     }
@@ -492,74 +493,6 @@ public partial class FormMilongas : Form
                 return;
             }
 
-            List<Milonga> milongasPendientes =
-                resultado
-                    .Where(
-                        milonga =>
-                            !milongasConDetalleCargado
-                                .Contains(
-                                    milonga))
-                    .ToList();
-
-            if (milongasPendientes.Count > 0)
-            {
-                await navegadorSemaphore.WaitAsync(
-                    cancellationToken);
-
-                try
-                {
-                    await hoyMilongaService
-                        .CompletarDetallesAsync(
-                            milongasPendientes);
-
-                    foreach (
-                        Milonga milonga
-                        in milongasPendientes)
-                    {
-                        milongasConDetalleCargado
-                            .Add(
-                                milonga);
-                    }
-                }
-                catch (PlaywrightException ex)
-                {
-                    if (!cancellationToken
-                        .IsCancellationRequested)
-                    {
-                        MessageBox.Show(
-                            $"No se pudo cargar una de las fichas:\n{ex.Message}",
-                            "Error de navegación",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);
-                    }
-
-                    return;
-                }
-                finally
-                {
-                    navegadorSemaphore
-                        .Release();
-                }
-            }
-
-            cancellationToken
-                .ThrowIfCancellationRequested();
-
-            distanciaService.CalcularDistancias(
-                resultado,
-                LatitudOrigenTemporal,
-                LongitudOrigenTemporal);
-
-            if (CmbOrden.SelectedItem?
-                    .ToString()
-                == "Distancia")
-            {
-                resultado =
-                    distanciaService
-                        .OrdenarPorDistancia(
-                            resultado);
-            }
-
             cancellationToken
                 .ThrowIfCancellationRequested();
 
@@ -627,7 +560,10 @@ public partial class FormMilongas : Form
                 new MilongaCard(
                     ObtenerDetalleSeguroAsync,
                     () =>
-                        agendaCompletaCargada);
+                        agendaCompletaCargada &&
+                        detalleDisponibleDesde.HasValue &&
+                        DateTime.Now >=
+                            detalleDisponibleDesde.Value);
 
             card.CargarMilonga(
                 milonga);
@@ -770,23 +706,33 @@ public partial class FormMilongas : Form
             .Dispose();
     }
 
-    private async Task<MilongaDetalle>
-        ObtenerDetalleSeguroAsync(
-            Milonga milonga)
+    private async Task<MilongaDetalle> ObtenerDetalleSeguroAsync(
+     Milonga milonga)
     {
-        await navegadorSemaphore
-            .WaitAsync();
+        await navegadorSemaphore.WaitAsync();
 
         try
         {
-            return await hoyMilongaService
-                .ObtenerDetalleAsync(
-                    milonga);
+            MilongaDetalle detalle =
+                await hoyMilongaService
+                    .ObtenerDetalleAsync(milonga);
+
+            milonga.Latitud =
+                detalle.Latitud;
+
+            milonga.Longitud =
+                detalle.Longitud;
+
+            distanciaService.CalcularDistancias(
+                new List<Milonga> { milonga },
+                LatitudOrigenTemporal,
+                LongitudOrigenTemporal);
+
+            return detalle;
         }
         finally
         {
-            navegadorSemaphore
-                .Release();
+            navegadorSemaphore.Release();
         }
     }
 
@@ -818,59 +764,6 @@ public partial class FormMilongas : Form
 
             actualizandoInterfaz =
                 false;
-        }
-    }
-
-    private async Task PrecargarDetallesAsync(
-        List<Milonga> milongas)
-    {
-        List<Milonga> pendientes =
-            milongas
-                .Where(
-                    milonga =>
-                        !milongasConDetalleCargado
-                            .Contains(
-                                milonga))
-                .ToList();
-
-        if (pendientes.Count == 0)
-        {
-            return;
-        }
-
-        await navegadorSemaphore
-            .WaitAsync();
-
-        try
-        {
-            await hoyMilongaService
-                .CompletarDetallesAsync(
-                    pendientes);
-
-            foreach (
-                Milonga milonga
-                in pendientes)
-            {
-                milongasConDetalleCargado
-                    .Add(
-                        milonga);
-            }
-
-            distanciaService.CalcularDistancias(
-                pendientes,
-                LatitudOrigenTemporal,
-                LongitudOrigenTemporal);
-        }
-        catch (PlaywrightException)
-        {
-            // La precarga es una optimización.
-            // Si una ficha falla acá, podrá
-            // cargarse posteriormente al necesitarla.
-        }
-        finally
-        {
-            navegadorSemaphore
-                .Release();
         }
     }
 }

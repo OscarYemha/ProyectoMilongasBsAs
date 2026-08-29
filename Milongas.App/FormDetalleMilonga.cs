@@ -6,73 +6,41 @@ public partial class FormDetalleMilonga : Form
 {
     private readonly Milonga milonga;
 
-    private readonly Func<Milonga, Task<MilongaDetalle>>
-        obtenerDetalleAsync;
-
     private MilongaDetalle? detalle;
 
     public FormDetalleMilonga(
-        Milonga milonga,
-        Func<Milonga, Task<MilongaDetalle>> obtenerDetalleAsync)
+    Milonga milonga,
+    MilongaDetalle detalle)
     {
         InitializeComponent();
 
         this.milonga =
             milonga;
 
-        this.obtenerDetalleAsync =
-            obtenerDetalleAsync;
+        this.detalle =
+            detalle;
 
         Text =
             milonga.Nombre;
 
-        Shown +=
-            FormDetalleMilonga_Shown;
-    }
+        MostrarDatosBasicos();
+        MostrarDetalle();
+        ConfigurarContactos();
 
-    private async void FormDetalleMilonga_Shown(
-    object? sender,
-    EventArgs e)
-    {
-        LblCargando.Visible = true;
-        PnlCabecera.Visible = false;
-        PnlInformacion.Visible = false;
-        FlpDescripcion.Visible = false;
-        FlpContactos.Visible = false;
+        LblCargando.Visible =
+            false;
 
-        try
-        {
-            UseWaitCursor = true;
+        PnlCabecera.Visible =
+            true;
 
-            detalle =
-                await obtenerDetalleAsync(
-                    milonga);
+        PnlInformacion.Visible =
+            true;
 
-            MostrarDatosBasicos();
-            MostrarDetalle();
-            ConfigurarContactos();
+        FlpDescripcion.Visible =
+            true;
 
-            LblCargando.Visible = false;
-            PnlCabecera.Visible = true;
-            PnlInformacion.Visible = true;
-            FlpDescripcion.Visible = true;
-            FlpContactos.Visible = true;
-        }
-        catch (Exception ex)
-        {
-            LblCargando.Text =
-                "No se pudo cargar la información.";
-
-            MessageBox.Show(
-                ex.Message,
-                "Error al cargar el detalle",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
-        }
-        finally
-        {
-            UseWaitCursor = false;
-        }
+        FlpContactos.Visible =
+            true;
     }
 
     private void MostrarDatosBasicos()

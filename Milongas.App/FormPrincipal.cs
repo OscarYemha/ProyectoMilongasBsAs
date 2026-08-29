@@ -12,6 +12,8 @@ namespace Milongas.App
 {
     public partial class FormPrincipal : Form
     {
+
+        private FormMilongas? formMilongas;
         public FormPrincipal()
         {
             InitializeComponent();
@@ -21,10 +23,15 @@ namespace Milongas.App
         }
 
         private void PnlMilongas_Click(
-    object sender,
-    EventArgs e)
+            object sender,
+            EventArgs e)
         {
-            FormMilongas formMilongas = new();
+            if (formMilongas is null ||
+                formMilongas.IsDisposed)
+            {
+                formMilongas =
+                    new FormMilongas();
+            }
 
             formMilongas.ShowDialog();
         }

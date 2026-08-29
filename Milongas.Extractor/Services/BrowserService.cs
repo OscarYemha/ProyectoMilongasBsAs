@@ -17,6 +17,9 @@ public class BrowserService : IAsyncDisposable
     private IPlaywright? playwright;
     private IBrowser? browser;
 
+    private IBrowserContext? contextoAgenda;
+    private IBrowserContext? contextoDetalle;
+
     private IPage? paginaAgenda;
     private IPage? paginaDetalle;
 
@@ -38,11 +41,39 @@ public class BrowserService : IAsyncDisposable
                     Headless = true
                 });
 
+        contextoAgenda =
+            await browser.NewContextAsync();
+
+        contextoDetalle =
+            await browser.NewContextAsync();
+
         paginaAgenda =
-            await browser.NewPageAsync();
+            await contextoAgenda.NewPageAsync();
 
         paginaDetalle =
-            await browser.NewPageAsync();
+            await contextoDetalle.NewPageAsync();
+
+        await paginaDetalle.GotoAsync(
+            "https://www.hoy-milonga.com/buenos-aires/es/milongas",
+            new PageGotoOptions
+            {
+                WaitUntil =
+                    WaitUntilState.DOMContentLoaded,
+
+                Timeout =
+                    TimeoutAgendaMs
+            });
+
+        await paginaDetalle.WaitForSelectorAsync(
+            "button.day-button",
+            new PageWaitForSelectorOptions
+            {
+                State =
+                    WaitForSelectorState.Visible,
+
+                Timeout =
+                    TimeoutAgendaMs
+            });
     }
 
     public async IAsyncEnumerable<AgendaDiaWeb>
@@ -104,15 +135,11 @@ public class BrowserService : IAsyncDisposable
         int indiceActivo =
             await botonActivo
                 .EvaluateAsync<int>(
-                    @"elemento => {
-                        const botones =
-                            Array.from(
-                                document.querySelectorAll(
-                                    'button.day-button'));
-
-                        return botones.indexOf(
-                            elemento);
-                    }");
+                    @"elemento =>
+                        Array.from(
+                            document.querySelectorAll(
+                                'button.day-button'))
+                            .indexOf(elemento)");
 
         if (indiceActivo < 0)
         {
@@ -496,8 +523,22 @@ public class BrowserService : IAsyncDisposable
                     TimeoutDetalleMs
             });
 
-        return await paginaActual
-            .ContentAsync();
+        string html =
+            await paginaActual.ContentAsync();
+
+        bool esPaginaLogin =
+            await paginaActual
+                .Locator("#detailForm")
+                .CountAsync() > 0;
+
+        if (esPaginaLogin)
+        {
+            throw new InvalidOperationException(
+                "Hoy Milonga redirigió la solicitud " +
+                "a la página de inicio de sesión.");
+        }
+
+        return html;
     }
 
     private IPage ObtenerPaginaAgenda()
@@ -571,39 +612,67 @@ public class BrowserService : IAsyncDisposable
             200);
     }
 
-    public async ValueTask DisposeAsync()
+    public async Task
+        ReiniciarContextoDetalleAsync()
     {
-        if (paginaAgenda is not null)
+        if (browser is null)
         {
-            await paginaAgenda
-                .CloseAsync();
+            throw new InvalidOperationException(
+                "El navegador no fue inicializado.");
         }
 
         if (paginaDetalle is not null)
         {
-            await paginaDetalle
-                .CloseAsync();
+            await paginaDetalle.CloseAsync();
+            paginaDetalle = null;
+        }
+
+        if (contextoDetalle is not null)
+        {
+            await contextoDetalle.CloseAsync();
+            contextoDetalle = null;
+        }
+
+        contextoDetalle =
+            await browser.NewContextAsync();
+
+        paginaDetalle =
+            await contextoDetalle.NewPageAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (paginaAgenda is not null)
+        {
+            await paginaAgenda.CloseAsync();
+            paginaAgenda = null;
+        }
+
+        if (paginaDetalle is not null)
+        {
+            await paginaDetalle.CloseAsync();
+            paginaDetalle = null;
+        }
+
+        if (contextoAgenda is not null)
+        {
+            await contextoAgenda.CloseAsync();
+            contextoAgenda = null;
+        }
+
+        if (contextoDetalle is not null)
+        {
+            await contextoDetalle.CloseAsync();
+            contextoDetalle = null;
         }
 
         if (browser is not null)
         {
-            await browser
-                .DisposeAsync();
+            await browser.DisposeAsync();
+            browser = null;
         }
 
-        playwright?
-            .Dispose();
-
-        paginaAgenda =
-            null;
-
-        paginaDetalle =
-            null;
-
-        browser =
-            null;
-
-        playwright =
-            null;
+        playwright?.Dispose();
+        playwright = null;
     }
 }

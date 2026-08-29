@@ -33,7 +33,7 @@
             LblNombre = new Label();
             LblHorario = new Label();
             LblUbicacion = new Label();
-            LblClaseDistancia = new Label();
+            LblClase = new Label();
             LblModalidadEntrada = new Label();
             LblEventoEspecial = new Label();
             LblCancelada = new Label();
@@ -87,14 +87,14 @@
             LblUbicacion.TabIndex = 4;
             LblUbicacion.Text = "label4";
             // 
-            // LblClaseDistancia
+            // LblClase
             // 
-            LblClaseDistancia.AutoSize = true;
-            LblClaseDistancia.Location = new Point(96, 58);
-            LblClaseDistancia.Name = "LblClaseDistancia";
-            LblClaseDistancia.Size = new Size(38, 15);
-            LblClaseDistancia.TabIndex = 5;
-            LblClaseDistancia.Text = "label5";
+            LblClase.AutoSize = true;
+            LblClase.Location = new Point(96, 58);
+            LblClase.Name = "LblClase";
+            LblClase.Size = new Size(38, 15);
+            LblClase.TabIndex = 5;
+            LblClase.Text = "label5";
             // 
             // LblModalidadEntrada
             // 
@@ -149,7 +149,7 @@
             Controls.Add(LblNombre);
             Controls.Add(LblHorario);
             Controls.Add(LblUbicacion);
-            Controls.Add(LblClaseDistancia);
+            Controls.Add(LblClase);
             Controls.Add(LblModalidadEntrada);
             Controls.Add(LblEventoEspecial);
             Controls.Add(LblCancelada);
@@ -168,7 +168,7 @@
         private Label LblNombre;
         private Label LblHorario;
         private Label LblUbicacion;
-        private Label LblClaseDistancia;
+        private Label LblClase;
         private Label LblModalidadEntrada;
         private Label LblEventoEspecial;
         private Label LblCancelada;
