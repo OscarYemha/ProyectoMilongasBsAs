@@ -140,22 +140,36 @@ public class HtmlExtractor
     }
 
     private static string ObtenerHorario(
-        HtmlNode tarjeta)
+    HtmlNode tarjeta)
     {
-        string textoTarjeta =
+        HtmlNode? iconoHorario =
+            tarjeta.SelectSingleNode(
+                ".//*[@name and " +
+                "contains(@name,'clock')]");
+
+        if (iconoHorario is null)
+        {
+            return "";
+        }
+
+        HtmlNode? bloqueHorario =
+            iconoHorario.SelectSingleNode(
+                "ancestor::div[" +
+                "contains(" +
+                "concat(' ', normalize-space(@class), ' '), " +
+                "' lh-20 ')" +
+                "][1]");
+
+        if (bloqueHorario is null)
+        {
+            return "";
+        }
+
+        string horario =
             LimpiarTexto(
-                tarjeta.InnerText);
+                bloqueHorario.InnerText);
 
-        Match coincidencia =
-            Regex.Match(
-                textoTarjeta,
-                @"\b\d{1,2}:\d{2}\s*-\s*" +
-                @"(?:\d{1,2}:\d{2}|Medianoche)\b",
-                RegexOptions.IgnoreCase);
-
-        return coincidencia.Success
-            ? coincidencia.Value
-            : "";
+        return horario;
     }
 
     private static (
@@ -288,7 +302,7 @@ public class HtmlExtractor
     }
 
     private static string ObtenerHorarioClase(
-        HtmlNode tarjeta)
+    HtmlNode tarjeta)
     {
         HtmlNode? iconoClase =
             tarjeta.SelectSingleNode(
@@ -313,15 +327,31 @@ public class HtmlExtractor
             return "";
         }
 
-        Match coincidencia =
-            Regex.Match(
-                bloqueClase.OuterHtml,
-                @"\b\d{1,2}:\d{2}\s*-\s*" +
-                @"\d{1,2}:\d{2}\b");
+        HtmlNodeCollection? parrafos =
+            bloqueClase.SelectNodes(
+                ".//p");
 
-        return coincidencia.Success
-            ? coincidencia.Value
-            : "";
+        if (parrafos is null)
+        {
+            return "";
+        }
+
+        foreach (HtmlNode parrafo in parrafos)
+        {
+            string texto =
+                LimpiarTexto(
+                    parrafo.InnerText);
+
+            if (Regex.IsMatch(
+                    texto,
+                    @"\d{1,2}:\d{2}",
+                    RegexOptions.IgnoreCase))
+            {
+                return texto;
+            }
+        }
+
+        return "";
     }
 
     private static string ObtenerModalidadEntrada(

@@ -145,7 +145,7 @@
             // LblBarrio
             // 
             LblBarrio.AutoSize = true;
-            LblBarrio.Location = new Point(10, 87);
+            LblBarrio.Location = new Point(10, 60);
             LblBarrio.Name = "LblBarrio";
             LblBarrio.Size = new Size(38, 15);
             LblBarrio.TabIndex = 8;
@@ -155,7 +155,7 @@
             // LblClase
             // 
             LblClase.AutoSize = true;
-            LblClase.Location = new Point(10, 102);
+            LblClase.Location = new Point(10, 117);
             LblClase.Name = "LblClase";
             LblClase.Size = new Size(38, 15);
             LblClase.TabIndex = 9;
@@ -165,7 +165,7 @@
             // LblDistancia
             // 
             LblDistancia.AutoSize = true;
-            LblDistancia.Location = new Point(10, 117);
+            LblDistancia.Location = new Point(10, 75);
             LblDistancia.Name = "LblDistancia";
             LblDistancia.Size = new Size(44, 15);
             LblDistancia.TabIndex = 10;
@@ -241,7 +241,7 @@
             // BtnComoLlego
             // 
             BtnComoLlego.AutoSize = true;
-            BtnComoLlego.Location = new Point(10, 59);
+            BtnComoLlego.Location = new Point(10, 89);
             BtnComoLlego.Name = "BtnComoLlego";
             BtnComoLlego.Size = new Size(89, 25);
             BtnComoLlego.TabIndex = 16;

@@ -75,7 +75,7 @@ public partial class FormDetalleMilonga : Form
         string clase =
             milonga.TieneClase
                 ? $"Clase: {milonga.HorarioClase}"
-                : "";
+                : "Sin clase";
 
         MostrarLabel(
             LblClase,

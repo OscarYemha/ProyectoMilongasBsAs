@@ -55,6 +55,8 @@ public partial class FormMilongas : Form
     {
         InitializeComponent();
 
+        CentrarLabelCargando();
+
         hoyMilongaService =
             new HoyMilongaService();
 
@@ -64,7 +66,6 @@ public partial class FormMilongas : Form
         distanciaService =
             new DistanciaService();
 
-        ConfigurarOrden();
         ConfigurarClase();
 
         HabilitarControlesAgenda(
@@ -76,6 +77,85 @@ public partial class FormMilongas : Form
         FlpMilongas.Resize +=
             (_, _) =>
                 AjustarAnchoTarjetas();
+
+        Shown += FormMilongas_Shown;
+
+        Resize += FormMilongas_Resize;
+    }
+
+    private void FormMilongas_Resize(
+    object? sender,
+    EventArgs e)
+    {
+        CentrarLabelCargando();
+    }
+
+    private void CentrarLabelCargando()
+    {
+        int x =
+            FlpMilongas.Left +
+            (FlpMilongas.Width -
+             LblCargando.Width) / 2;
+
+        LblCargando.Location =
+            new Point(
+                x,
+                250);
+    }
+
+    private async void FormMilongas_Shown(
+    object? sender,
+    EventArgs e)
+    {
+        if (!agendaCargada)
+        {
+            await CargarAgendaAsync();
+            return;
+        }
+
+        DateOnly hoy =
+            DateOnly.FromDateTime(
+                DateTime.Today);
+
+        actualizandoFechas =
+            true;
+
+        actualizandoFiltros =
+            true;
+
+        try
+        {
+            if (CmbFecha.Items.Contains(hoy))
+            {
+                CmbFecha.SelectedItem =
+                    hoy;
+            }
+
+            if (CmbBarrio.Items.Count > 0)
+            {
+                CmbBarrio.SelectedIndex =
+                    0;
+            }
+
+            if (CmbClase.Items.Count > 0)
+            {
+                CmbClase.SelectedIndex =
+                    0;
+            }
+        }
+        finally
+        {
+            actualizandoFechas =
+                false;
+
+            actualizandoFiltros =
+                false;
+        }
+
+        await ProgramarActualizacionAsync(
+            hoy,
+            TxtBuscar.Text,
+            aplicarDemora: false);
     }
 
     private void FormMilongas_FormClosing(object? sender,
@@ -89,9 +169,7 @@ public partial class FormMilongas : Form
         }
     }
 
-    private async void BtnCargar_Click(
-        object sender,
-        EventArgs e)
+    private async Task CargarAgendaAsync()
     {
         filtroCancellationTokenSource?
             .Cancel();
@@ -104,12 +182,6 @@ public partial class FormMilongas : Form
 
         FlpMilongas.Visible =
             false;
-
-        BtnCargar.Enabled =
-            false;
-
-        BtnCargar.Text =
-            "Cargando...";
 
         HabilitarControlesAgenda(
             false);
@@ -209,12 +281,6 @@ public partial class FormMilongas : Form
             FlpMilongas.Visible =
                 true;
 
-            BtnCargar.Enabled =
-                true;
-
-            BtnCargar.Text =
-                "Cargar agenda";
-
             HabilitarControlesAgenda(
                 agendaCompletaCargada);
         }
@@ -227,9 +293,6 @@ public partial class FormMilongas : Form
             habilitar;
 
         TxtBuscar.Enabled =
-            habilitar;
-
-        CmbOrden.Enabled =
             habilitar;
 
         CmbBarrio.Enabled =
@@ -379,17 +442,6 @@ public partial class FormMilongas : Form
             "Sin clase");
 
         CmbClase.SelectedIndex =
-            0;
-    }
-
-    private void ConfigurarOrden()
-    {
-        CmbOrden.Items.Clear();
-
-        CmbOrden.Items.Add(
-            "Horario");
-
-        CmbOrden.SelectedIndex =
             0;
     }
 

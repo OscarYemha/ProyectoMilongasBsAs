@@ -41,19 +41,6 @@ public class HoyMilongaService : IAsyncDisposable
                 htmlExtractor.ObtenerMilongas(
                     diaWeb.Html);
 
-            Debug.WriteLine(
-    $"DÍA {diaWeb.Fecha:dd/MM/yyyy} - " +
-    $"ACTIVO: {diaWeb.EsFechaActiva} - " +
-    $"{milongasDelDia.Count} milongas");
-
-            foreach (
-                Milonga milonga
-                in milongasDelDia.Take(3))
-            {
-                Debug.WriteLine(
-                    $"    {milonga.Nombre}");
-            }
-
             foreach (
                 Milonga milonga
                 in milongasDelDia)
@@ -165,14 +152,36 @@ public class HoyMilongaService : IAsyncDisposable
             "https://www.hoy-milonga.com" +
             milonga.Link;
 
-        string htmlDetalle =
-            await browserService
-                .ObtenerHtmlDetalleAsync(
-                    urlDetalle);
+        const int maxIntentos = 3;
 
-        return detalleExtractor
-            .ObtenerDetalle(
-                htmlDetalle);
+        for (int intento = 1;
+             intento <= maxIntentos;
+             intento++)
+        {
+            try
+            {
+                Debug.WriteLine(
+                    $"DETALLE {milonga.Nombre}: intento {intento}");
+
+                string htmlDetalle =
+                    await browserService
+                        .ObtenerHtmlDetalleAsync(
+                            urlDetalle);
+
+                return detalleExtractor
+                    .ObtenerDetalle(
+                        htmlDetalle);
+            }
+            catch (InvalidOperationException)
+                when (intento < maxIntentos)
+            {
+                await browserService
+                    .ReiniciarContextoDetalleAsync();
+            }
+        }
+
+        throw new InvalidOperationException(
+            "No se pudo obtener el detalle de la milonga.");
     }
 
     private static bool DetalleTieneInformacion(

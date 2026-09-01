@@ -613,7 +613,7 @@ public class BrowserService : IAsyncDisposable
     }
 
     public async Task
-        ReiniciarContextoDetalleAsync()
+    ReiniciarContextoDetalleAsync()
     {
         if (browser is null)
         {
@@ -638,6 +638,28 @@ public class BrowserService : IAsyncDisposable
 
         paginaDetalle =
             await contextoDetalle.NewPageAsync();
+
+        await paginaDetalle.GotoAsync(
+            "https://www.hoy-milonga.com/buenos-aires/es/milongas",
+            new PageGotoOptions
+            {
+                WaitUntil =
+                    WaitUntilState.DOMContentLoaded,
+
+                Timeout =
+                    TimeoutAgendaMs
+            });
+
+        await paginaDetalle.WaitForSelectorAsync(
+            "button.day-button",
+            new PageWaitForSelectorOptions
+            {
+                State =
+                    WaitForSelectorState.Visible,
+
+                Timeout =
+                    TimeoutAgendaMs
+            });
     }
 
     public async ValueTask DisposeAsync()

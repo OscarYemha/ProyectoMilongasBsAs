@@ -131,20 +131,58 @@ public class MilongaDetalleExtractor
     }
 
     private static string ObtenerDireccion(
-        HtmlDocument documento)
+    HtmlDocument documento)
     {
-        HtmlNode? nodoDireccion =
+        HtmlNode? enlaceMapa =
             documento.DocumentNode
                 .SelectSingleNode(
-                    "//span[contains(@class,'user-select-all')]");
+                    "//a[@id='entity-header-directions']");
 
-        if (nodoDireccion is null)
+        if (enlaceMapa is null)
         {
             return "";
         }
 
-        return LimpiarTexto(
-            nodoDireccion.InnerText);
+        HtmlNode? contenedor =
+            enlaceMapa.ParentNode;
+
+        if (contenedor is null)
+        {
+            return "";
+        }
+
+        string texto =
+            LimpiarTexto(
+                contenedor.InnerText);
+
+        string textoBoton =
+            LimpiarTexto(
+                enlaceMapa.InnerText);
+
+        if (!string.IsNullOrWhiteSpace(
+                textoBoton))
+        {
+            texto =
+                texto.Replace(
+                    textoBoton,
+                    "",
+                    StringComparison.OrdinalIgnoreCase)
+                .Trim();
+        }
+
+        int separador =
+            texto.IndexOf(
+                '|');
+
+        if (separador >= 0 &&
+            separador < texto.Length - 1)
+        {
+            texto =
+                texto[(separador + 1)..]
+                    .Trim();
+        }
+
+        return texto;
     }
 
     private static (
